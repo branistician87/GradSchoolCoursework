@@ -1,0 +1,792 @@
+---
+title: "HW 4"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 2.6-1 An excellent free-throw shooter attempts several  free throws until she misses.  
+#### (a) If p = 0.9 is her probability of making a free throw,  what is the probability of having the first miss on the  13th attempt or later? 
+
+
+P(X>=13) = 1 - P(X=<12)
+We are given that p = 0.9. (1-p) = (1-0.9)=0.1
+
+Let X be the random variable representing the number of attempts until the first miss occurs. 
+
+X~Geom(0.9)
+```{r}
+1 - pgeom(11, 0.1)
+```
+
+$\boxed{0.2824295}$
+
+#### (b) If she continues shooting until she misses three, what is the probability that the third miss occurs on the 30th  attempt? 
+
+P(X=30)
+
+Let X be the random variable representing the total number of attempts until the third miss occurs.
+X~NB(3,0.9)
+```{r}
+choose(30 - 1, 3 - 1) * (0.1^3) * (0.9^(30 - 3))
+```
+
+$\boxed{0.02360879}$
+
+### 3.1-1 Show that the mean, variance, and mgf of the uniform distribution are as given in this section.
+
+The mean $(\mu)$ of a uniform distribution $(X\sim U(a,b))$ is 
+
+$f(x) = \frac{1}{b-a}$, for $a\le {x} \le b$
+
+$E(X) = \int_a^b x*f(x) dx$
+
+$= \int_a^b x*  \frac{1}{b-a}dx$
+
+$= \frac{1}{b-a} * \int_a^b xdx$
+
+$= \frac{1}{b-a} * \frac{x^2}{2}]_a^b$
+
+$=  \frac{1}{b-a} * [\frac{b^2}{2}-\frac{a^2}{2}]$
+
+$= \frac{b+a}{2}$
+
+Therefore, $\boxed{E(X)=\frac{b+a}{2}}$
+
+In order to find the variance we must first calculate $E(X^2)$
+
+$E(X^2) = \int_a^b x^2*f(x) dx$
+
+$= \int_a^b x^2*  \frac{1}{b-a}dx$
+
+$= \frac{1}{b-a} * \int_a^b x^2dx$
+
+$= \frac{1}{b-a} * \frac{x^3}{3}]_a^b$
+
+$=  \frac{1}{b-a} * [\frac{b^3}{3}-\frac{a^3}{3}]$ 
+
+We can use the fact that
+$b^3-a^3 = (b-a)(b^2+ab+a^2)$
+
+$=  \frac{1}{b-a} * [\frac{(b-a) (b^2+ab+a^2)}{3}]$
+
+$=\boxed{ \frac{(b^2+ab+a^2)}{3}}$
+
+The formula to solve for the $Var(X) = E(X^2) - [E(X)]^2$
+
+$Var(X)= \frac{b^2+ab+a^2}{3} - (\frac{b+a}{2})^2$
+
+$= \frac{b^2+ab+a^2}{3} - \frac{b^2+2ab+a^2}{4}$
+
+$= \frac{(4b^2+4ab+4a^2)}{12} - \frac{3b^2+6ab+3a^2}{12}$
+
+$= \frac{b^2-2ab+a^2}{12}$
+
+Therefore the $Var(X) = \boxed{\frac{b^2-2ab+a^2}{12}}$
+
+The Moment Generating function is $M(t) = \int^{\infty}_{-\infty} e^{tx}*f(x)dx, -h < t < h$
+
+$\int_a^b e^{tx}* \frac{1}{b-a}dx$
+
+$= \frac{1}{b-a}*\int_a^b e^{tx}dx$
+
+$= \frac{1}{b-a}*\frac{e^{tx}}{t}]_a^b$
+
+$= \frac{1}{b-a}* [\frac{e^{bt}}{t}-\frac{e^{at}}{t}]$
+
+$= \frac{1}{b-a}* [\frac{e^{bt} - e^{at}}{t}]$
+
+$= [\frac{e^{bt}-e^{at}}{t(b-a)}], t \neq 0$
+
+
+$M_X(t) =
+\begin{cases} 
+\frac{e^{tb} - e^{ta}}{t(b - a)} & \text{if } t \neq 0, \\
+1 & \text{if } t = 0.
+\end{cases}$
+
+
+### 3.1-3 Customers arrive randomly at a bank teller’s window. Given that one customer arrived during a particular  ten-minute period, let X equal the time within the ten  minutes that the customer arrived. If X is U(0, 10), find 
+
+#### (a) The pdf of X. 
+
+X ~ U$(a,b), a\le x \le b$
+
+$f(x)=\frac{1}{b-a}, a\le x \le b$
+
+a = 0
+b = 10
+
+The PDF for X is constant over the interval [0,10] so,
+
+$\boxed{f(x)=\frac{1}{10-0} = \frac{1}{10}, for\ 0 \le x \le10}$
+
+
+#### (b) P(X ≥ 8). 
+
+$P(X\le8) = \int_0^8 \frac{1}{10}dx$
+
+$= \frac{1}{10}x]_0^8$
+
+$= \frac{8-0}{10}$
+
+$= \frac{8}{10}$
+
+using the complement to obtain the probability
+
+```{r}
+1-0.8
+```
+
+$\boxed{0.2}$
+
+#### (c) P(2 ≤ X < 8). 
+
+$P(2 ≤ X < 8) = \int_2^8 \frac{1}{10}dx$
+
+$= \frac{1}{10}x]_2^8$
+
+$= \frac{8-2}{10}$
+
+$=\boxed{ \frac{6}{10}}$
+
+### (d) E(X). 
+
+$E(X) = \int_{0}^{10}x * \frac{1}{10}dx$
+
+$= \frac{1}{10}* \int_{0}^{10}xdx$
+
+$= \frac{1}{10}*\frac{x^2}{2}]_0^{10}$
+
+$= \frac{1}{10}*\frac{10^2-0^2}{2}$
+
+$= \frac{10}{2}$
+
+$=\boxed{5}$
+
+
+### (e) Var(X). 
+
+$E(X^2) = \int_{0}^{10}x^2 * \frac{1}{10}dx$
+
+$= \frac{1}{10}* \int_{0}^{10}x^2dx$
+
+$= \frac{1}{10}*\frac{x^3}{3}]_0^{10}$
+
+$= \frac{1}{10}*\frac{10^3-0^3}{3}$
+
+$= \frac{100}{3}$
+
+$Var(X) = E(X^2)-[E(X)]^2$
+
+$\frac{100}{3}-{5^2}$
+
+$\boxed{\frac{25}{3}}$
+
+### 3.1-5 Let Y have a uniform distribution U(0, 1), and let  W = a + (b − a)Y, a < b.  (a) Find the cdf of W.  HINT: Find P[a + (b − a)Y ≤ w]. 
+
+$Given \ that \ W = a+(b-a)Y, we \ need \ to \ solve \ for \ Y$
+
+$P(W \le w) = P(a+(b-a)Y \le w)$
+
+$= (b-a)Y \le w-a$
+
+$= Y \le \frac{w-a}{b-a}$
+
+$\int_0^{\frac{w-a}{b-a}}dy$
+
+$y]_0^{\frac{w-a}{b-a}}$
+
+$\frac{w-a}{b-a}$
+
+$Therefore, \ the \ cdf \ of \ W \ is \ \boxed{F(w) = \frac{w-a}{b-a}, for \ a \le w \le b}$
+
+#### (b) How is W distributed?
+If we consider X is a continuous random variable that follows the uniform distribution then the probability density function of X would be:
+
+$f(x) = \frac{1}{b-a}, for \ a \le x \le b$
+
+The distribution function of X will then be:
+
+$P(X \le x) = \frac{x-a}{b-a}$
+
+Comparing that to the distribution function of W,
+$P(W \le w) = \frac{w-a}{b-a}$
+
+Therefore, W is distributed uniformly.
+
+
+### 3.1-8 For each of the following functions, (i) find the  constant c so that f(x) is a pdf of a random variable X;  (ii) find the cdf, F(x) = P(X ≤ x); (iv)  find μ, σ2,
+
+#### (a) f(x) = x3/4, 0 < x < c. 
+
+##### Part (i)
+
+$f(x)= \frac{x^3}{4}, where 0 < x < c$
+
+$\int_0^cf(x)dx=1$
+
+$\int_0^c \frac{x^3}{4}dx=1$
+
+$\frac{1}{4}*\int_0^cx^3dx=1$
+
+$\frac{1}{4}*\frac{x^4}{4}]_0^c=1$
+
+$\frac{x^4}{16}]_0^c=1$
+
+$\frac{c^4}{4}-\frac{0^4}{4}=1$
+
+$\frac{c^4}{16}=1$
+
+$c^4=1$
+
+$c=\sqrt[4]{16}$
+
+$c=\boxed{2}$
+
+
+##### Part (ii)
+
+$P(X\le x) = \int p(x)dx$
+
+$F(X)= \int_0^x \frac{t^3}{4}dt$
+
+$= \frac{1}{4} * \int_0^x t^3dt$
+
+$= \frac{1}{4} * \frac{t^4}{4}]_0^x$
+
+$= \frac{t^4}{16}]_0^x$
+
+$= \frac{x^4}{16}- \frac{0^4}{16}$
+
+$=\boxed{ \frac{x^4}{16}, 0 \le x \le 2}$
+
+#### Part (iv)
+
+$\mu=E(X) = \int_0^c x*f(x)dx$
+
+$= \int_0^2x* \frac{x^3}{4}dx$
+
+$= \frac{1}{4}* \int_0^2 x^4dx$
+
+$= \frac{1}{4}*[\frac{x^5}{5}]_0^2]$
+
+$= \frac{2^5}{5} - \frac{0^5}{5}$
+
+$= \boxed{ \frac{32}{20}}$
+
+$\sigma^2=E(X) = \int_0^cx^2*f(x)dx$
+
+$= \int_0^2x^2* \frac{x^3}{4}dx$
+
+$= \frac{1}{4}* \int_0^2x^5dx$
+
+$= \frac{1}{4} * [\frac{x^6}{6}]_0^2]$
+
+$= \frac{x^6}{24}]_0^2$
+
+$= \frac{2^6}{24} - \frac{0^6}{24}$
+
+$= \frac{64}{24}$
+
+Computing the variance formula $E(X^2-[E(X)]^2$
+
+$= \frac{64}{24}- \frac{32}{20}$
+
+```{r}
+(64/24) - (32/20)^2
+```
+
+So $Var(X) = \boxed{0.1066667}$
+
+
+#### (b) f(x) = (3/16)x2, −c < x < c. 
+
+##### Part(i)
+$f(x) = \frac{3}{16}*x^2,\ -c < x < c$
+
+$= \int_{-c}^c \frac{3}{16}*x^2dx=1$
+
+$= \frac{3}{16}* \int_{-c}^cx^2dx=1$
+
+$= \frac{3}{16}* [\frac{x^3}{3}]]_{-c}^c=1$
+
+$= \frac{3x^3}{48}]_{-c}^c=1$
+
+$= \frac{3c^3}{48}- [\frac{-3c^3}{48}]=1$
+
+$= \frac{6c^3}{48}=1$
+
+$= 6c^3=48$
+
+$=c^3=48$
+
+$=c= \boxed{2}$
+
+##### Part (ii)
+$P(X \le x) = \int p(x)dx$
+
+$F(x) = \int_{-2}^x \frac{3}{16}x^2dt$
+
+
+$= \frac{3}{16}* \int_{-2}^xt^2dt$
+
+$= \frac{3}{16}* [\frac{t^3}{3}]_{-2}^x$
+
+$= \frac{t^3}{16}]_{-2}^x$
+
+$= \frac{x^3}{16}- [\frac{-2^3}{16}]$
+
+$=\boxed{ \frac{x^3+8}{16}}$
+
+##### Part (iv)
+
+$\mu = E(X) = \int_{-2}^2 x *\frac{3}{16}*x^2dx$
+
+$= \int_{-2}^2 x* \frac{3}{16}x^2dx$
+
+$= \frac{3}{16}* \int_{-2}^2x^3dx$
+
+$= \frac{3}{16} * \frac{x^4}{4}]_{-2}^2$
+
+$= \frac{3x^4}{15}]_{-2}^2$
+
+$\frac{3(2)^4}{4} - \frac{3(-2)}{4}$
+
+$= \frac{48}{64} - \frac{48}{64}$
+
+$Therefore,\ \boxed{\mu = 0}$
+
+$\sigma^2 = E(X) - [E(X)]^2$
+
+$Since\ E(X) = 0\ the\ variance\ simplifies\ to \ \sigma = E(X^2)$
+
+$= \int_{-2}^2x^2 * \frac{3}{16}x^2dx$
+
+$= \frac{3}{16} * \int_{-2}^2x^4dx$
+
+$= \frac{3}{16} * \frac{x^5}{5}]_{-2}^2$
+
+$= \frac{3(2)^5}{80}- \frac{3(-2)^5}{80}$
+
+$= \frac{192}{80}$
+
+```{r}
+192/80
+```
+
+$Therefore,\sigma^2 = \boxed{2.4}$
+
+
+#### (c) f(x) = c/ √x, 0 < x < 1. 
+
+##### Part (i)
+
+$\int_0^1 f(x)dx=1$
+
+$\int_0^1 \frac{c}{\sqrt{x}}dx=1$
+
+$$ \int \frac{c}{\sqrt{x}}=2 \sqrt{x}$$
+
+$$
+\int_0^1 \frac{c}{\sqrt{x}} = c * [2\sqrt{x}]_0^1
+$$
+
+$$
+= c * (2-0) = 2c
+$$
+
+$$
+2c = 1 -> c = \frac{1}{2}
+$$
+
+$$
+So \ the \ pdf \ is: \boxed{f(x) = \frac{1}{2*\sqrt{x}}, 0 < x < 1}
+$$
+
+
+
+
+##### Part (ii)
+$$
+F(x) = \int_0^x \frac{1}{2*\sqrt{t}} dt
+$$
+
+$$
+F(x) = [\sqrt{t}]_0^x = \sqrt{x}
+$$
+
+$F(x) = \begin{cases} 
+0 & \text{if } x \leq 0, \\
+\sqrt{x} & \text{if } 0 < x < 1, \\
+1 & \text{if } x \geq 1.
+\end{cases}$
+
+
+
+
+
+##### Part (iv)
+
+$\mu = E(X) = \int_0^1 x*f(x)dx = \int_0^1x* \frac{1}{2*\sqrt{x}}dx$
+
+$$
+= \frac{1}{2} = \int_0^1 \sqrt{x}dx
+$$
+
+$$
+\mu = \frac{1}{2} * [\frac{2}{3}x^{\frac{3}{2}}]_0^1
+$$
+
+$$
+= \frac{1}{2} * \frac{2}{3} = \frac{1}{3}
+$$
+
+$$
+\boxed{\mu = \frac{1}{3}}
+$$
+
+
+$$
+\sigma^2 = E(x - \mu)^2
+$$
+
+$$
+=\int_0^1 x^2f(x)dx = \int_0^1 x^2 * \frac{1}{2\sqrt{x}}dx
+$$
+
+
+$$
+= \frac{1}{2} \int_0^1 x^{\frac{3}{2}}dx
+$$
+$$
+E(x^2) = \frac{1}{2}* [\frac{2}{5}x^{\frac{5}{2}}]_0^1 = \frac{1}{2} * \frac{2}{5}
+$$
+
+$$
+= \frac{1}{5}
+$$
+
+$$
+\sigma^2 = E(x- \mu)^2 = \frac{1}{5}- (\frac{1}{3})^2 = \frac{1}{5}- \frac{1}{9}
+$$
+
+$$
+\boxed{\sigma^2 = \frac{4}{45}}
+$$
+
+
+The PDF is unbounded near x = 0
+
+
+
+
+
+### 3.1-9 Let the random variable X have the pdf f(x) =  2(1 − x), 0 ≤ x ≤ 1, zero elsewhere. 
+
+#### (b) Determine and sketch the graph of the cdf of X. 
+
+
+$For\ x <0:$
+$F(X) = 0 for\ x < 0$
+
+$For\ 0 \le x \le 1:$
+$F(x) = \int_0^x 2(1-t)dt$
+
+$F(x) = 2 \int_0^x(1-t)dt$
+
+$2 [t-\frac{t^2}{2}]_0^x$
+
+$2(x- \frac{x^2}{2})$
+
+$Thus, \ for \ 0 \le x \le 1: F(x) = 2x-x^2$
+
+$For \ x > 1 \ the \ cdf \ becomes \ 1$
+
+$F(x) =
+\begin{cases} 
+\ 0 & \text{if } x < 0, \\
+\ 2x-x^2 & \text{if } 0 \le x \le 1 \\
+1 & \text{if } x > 0.
+\end{cases}$
+
+
+
+
+
+```{r, fig.height=4, fig.width=6}
+curve(2*x - x^2, from = 0, to = 1, main = "CDF of X")
+```
+
+
+
+#### (c)
+##### Part (i)
+
+P(0 ≤ X ≤ 1/2)
+```{r}
+# Define the PDF function
+func1 <- function(x) {
+  2 * (1 - x)
+}
+
+# Use integrate to calculate P(0 ≤ X ≤ 1/2)
+result <- integrate(func1, lower = 0, upper = 1/2)
+
+result
+```
+
+$$
+P(0 \le X \le \frac{1}{2}) = \boxed{0.75}
+$$
+
+
+##### Part (ii)
+
+P(1/4 ≤ X ≤ 3/4), 
+
+```{r}
+# Define the PDF function
+func2 <- function(x) {
+  2 * (1 - x)
+}
+
+# Use integrate to calculate P(1/4 ≤ X ≤ 3/4)
+result <- integrate(func1, lower = 1/4, upper = 3/4)
+
+result
+```
+
+$$
+P(\frac{1}{4} \le X \le \frac{3}{4}) = \boxed{0.5}
+$$
+
+
+##### Part(iii)
+P(X = 3/4),
+
+For a continuous random variable, the probability that X takes on a specific value is 0
+
+$$
+P(X= \frac{3}{4}) = \boxed{0}
+$$
+
+##### Part (iv)
+P(X = 3/4)
+
+```{r}
+# Define the PDF function
+func2 <- function(x) {
+  2 * (1 - x)
+}
+
+# Use integrate to calculate P(3/4 ≤ X ≤ 1)
+result <- integrate(func1, lower = 3/4, upper = 1)
+
+result
+```
+
+
+
+$$
+P(X+ \frac{3}{4})= \boxed{0.0625}
+$$
+
+
+### 3.2-2 Telephone calls arrive at a doctor’s office according to a Poisson process on the average of two every three  minutes. Let X denote the waiting time until the first call  that arrives after 10 A.M.
+#### (a) What is the pdf of X? 
+
+On average there are 2 calls every 3 minutes.
+
+$\lambda = \frac{2}{3}$
+
+The pdf of an expenential distribution is 
+
+$f(x) = \frac{1}{\theta}e^{\frac{-x}{\theta}}$
+
+$f(x) = \frac{1}{\frac{3}{2}}e^{\frac{-x}{\frac{3}{2}}}$
+
+$\frac{2}{3}e^{\frac{-2x}{3}}$
+
+$The \ pdf \ is \ \boxed{f(x) = \frac{2}{3}e^{\frac{-2x}{3}}, 0 \le x < \infty}$
+
+
+
+#### (b) Find P(X > 2). 
+
+The CDF of an exponential distribution is given by:
+
+$F_x(x)= 1 - e^{\frac{-x}{\theta}}, \ 0 \le x < \infty$
+
+$P(X>2) = 1 - P(X \le 2)$
+
+$P(X>2) = 1 - (1-e^{\frac{-2}{\frac{3}{2}}})$
+
+$P(X>2) = e^{\frac{-4}{3}}$
+
+```{r}
+exp(-4/3)
+```
+
+$Therefore, \ P(X>2) = \boxed{0.2635971}$
+
+### 3.2-5 There are times when a shifted exponential model  is appropriate. That is, let the pdf of X be  f(x) =  1 / θ e−(x−δ)/θ, δ< x < ∞.  (a) Define the cdf of X. 
+
+$F(x) = \int_{\delta}^x f(x)dx$
+
+$F(x) = \int_{\delta}^x \frac{1}{\theta}*e^ \frac{-(x- \delta)}{\theta}dx$
+
+$= \int_{\delta}^x \frac{1}{\theta}*e^ \frac{\frac{-x}{\theta+\delta}}{\theta}dx$
+
+$=\frac{1}{\theta}*e^ \frac{\delta}{\theta} \int_\theta^x e^{\frac{-x}{\theta}}$
+
+$=\frac{1}{\theta}e^{\frac{\delta}{\theta}}((\frac{1}{\frac{-1}{\theta}})e^{\frac{-x}{\theta}})_\delta^x$
+
+$=\frac{1}{\theta}e^{\frac{\delta}{\theta}}(-\theta e^{\frac{-x}{\theta}})_\delta^x$
+
+$=-e^{\frac{\delta}{\theta}}(e^{\frac{-x}{\theta}})_\delta^x$
+
+$=-e^{\frac{\delta}{\theta}}(e^{\frac{-x}{\theta}}-e^{\frac{-\delta}{\theta}})$
+
+$= -e^{\frac{-x}{\theta}+\frac{\delta}{\theta}}+e^{\frac{-\delta}{\theta}+\delta \theta}$
+
+$= -e^{\frac{-x-\delta}{\delta}}+e^0$
+
+$=1-e^{-\frac{x-\delta}{\theta}}$
+
+$\boxed{F(x) =1 -e^{-\frac{x-\delta}{\theta}}, \delta \le x \le \infty}$
+
+##### Part (b)
+
+$$\mu = E(X) = \int_\delta^\infty x f(x)dx$$
+
+$$
+\mu = \int_\delta^\infty x* \frac{1}{\theta}e^{\frac{-(x-\delta)}{\theta}}dx
+$$
+
+
+
+
+
+$$
+\mu = \int_0^ \infty (\theta u + \delta)e^{-u}du
+$$
+
+
+
+
+
+$$
+\mu = \int_0^ \infty \theta u e^{-u} du + \int_0^\infty \delta e ^{-u}du
+$$
+
+
+
+
+
+
+$$
+\int_0^\infty \delta e^{-u}du = \delta * [-e^{-u}] = \delta
+$$
+$$
+\int_0^\infty ue^{-u}du=1
+$$
+$$
+\mu = \theta * 1 + \delta = \theta+\delta
+$$
+$$
+\boxed{\mu = \theta + \delta}
+$$
+
+
+
+
+
+
+
+$$
+\sigma^2 = E(x- \mu)^2
+$$
+
+
+
+$$
+= \int_\delta^\infty (\theta u +\delta)^2e^{-u}du
+$$
+$$
+(\theta u + \delta)^2 = \theta^2 u^2 + 2 \theta u \delta + \delta^2
+$$
+
+$$
+= \int_0^\infty \theta^2 u^2e^{-u}du + \int_0^\infty 2 \theta u \delta e^{-u}du + \int_0^\infty \delta^2 e^{-u}du
+$$
+
+
+$$
+\int_0^\infty \theta^2 u^2 e^{-u}du = 2 \theta^2
+$$
+
+
+
+
+$$
+\int_0^\infty 2 \theta \delta e^{-u}du = 2 \theta \delta
+$$
+
+
+
+
+$$
+\int_0^\infty \delta^2 e^{-u}du = \delta^2
+$$
+$$
+E(X)^2 = 2 \theta^2 + 2 \theta \delta + \delta^2
+$$
+
+$$
+\sigma^2 = E(X)^2 - \mu^2 = (2 \theta^2+2 \theta + \delta^2) - (\theta+ \delta)^2
+$$
+
+
+$$
+(\theta + \delta)^2 = \theta^2 + 2 \theta \delta + \delta^2
+$$
+
+
+
+
+
+$$
+Therefore, \ the \ Var(x) = 2 \theta^2 + 2 \theta \delta + \delta^2 - (\theta^2 + 2\theta \delta+ \delta^2) = \theta^2
+$$
+$$
+\boxed{\sigma^2 = \theta^2}
+$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

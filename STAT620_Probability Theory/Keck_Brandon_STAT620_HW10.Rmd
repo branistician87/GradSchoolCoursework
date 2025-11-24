@@ -1,0 +1,709 @@
+---
+title: "HW 10"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Section 6.4
+## 6.4-1
+
+$$
+L = \frac{1}{(\sigma\sqrt{2\pi})^n} e^{-\frac{\sum(x_i-\mu)^2}{2\sigma^2}}
+$$
+
+
+$$
+ln L = ln \frac{1}{(\sigma\sqrt{2\pi})^n} - \frac{\sum(x_i-\mu)^2}{2\sigma^2}
+$$
+
+
+$$
+\frac{\partial}{\partial \mu}lnL = 0
+$$
+
+$$
+2 \frac{\sum(x_i-\mu)}{2\sigma^2}=0
+$$
+
+$$
+\sum(x_i-\mu) = 0
+$$
+
+$$
+\sum x_i = n\mu
+$$
+
+$$
+\hat{\mu} = \frac{\sum x_i}{n}
+$$
+
+$$
+\boxed{\hat{\mu}= \bar{x}}
+$$
+
+## 6.4-2
+$$
+L = \frac{1}{(\sigma\sqrt{2\pi})^n} e^{-\frac{\sum(x_i-\mu)^2}{2\sigma^2}}
+$$
+
+$$
+ln L = ln \frac{1}{(\sigma\sqrt{2\pi})^n} - \frac{\sum(x_i-\mu)^2}{2\sigma^2}
+$$
+
+
+$$
+ln L = ln1 - \frac{n}{2}ln\sigma^2 - nln\sqrt{2\pi} - \frac{\sum(x_i-\mu)^2}{2\sigma^2}
+$$
+
+$$
+\frac{\partial}{\partial\sigma^2}lnL = 0
+$$
+
+$$
+-\frac{n}{2\sigma^2} + \frac{\sum(x_i-\mu)^2}{2\sigma^2} = 0
+$$
+
+$$
+\boxed{\hat{\sigma^2}= \frac{\sum(x_i-\mu)^2}{n}}
+$$
+
+## 6.4-4
+$$
+p(x) = \frac{2+\theta(2-x)}{6}, x =1,2,3
+$$
+
+$$
+E(X) = \sum xp(x)
+$$
+
+$$
+E(X) = 1 * \frac{2+\theta}{6} + 2 * \frac{2}{6} + 3 * \frac{2-\theta}{6}
+$$
+
+$$
+=\frac{6-\theta}{3}
+$$
+
+$$
+\frac{6-\theta}{3} = \bar{x}
+$$
+
+$$
+\hat{\theta} = 6-3\bar{x}
+$$
+
+$$
+\sum x = 3 + 2 + 3 + 1
+$$
+
+$$
+=9
+$$
+
+
+$$
+\bar{x}=\frac{9}{4}
+$$
+
+$$
+=2.25
+$$
+
+$$
+\hat{\theta} = 6 - 3 * 2.25
+$$
+
+$$
+\boxed{\approx -1}
+$$ 
+
+## 6.4-5
+### (a)
+
+$$
+L = \frac{1}{\theta ^ {2n}} \pi X_i e -\frac{\sum X_i}{\theta}
+$$
+
+$$
+lnL = \frac{1}{\theta ^ {2n}} \pi X_i e -\frac{\sum X_i}{\theta}
+$$
+
+$$
+ln L = ln1-2nln\theta + \sum lnX_i - \frac{\sum X_i}{\theta}
+$$
+
+$$
+\frac{\partial}{\partial \theta}lnL = 0
+$$
+
+
+$$
+-\frac{2n}{\theta} +\frac{\sum X_i}{\theta^2} = 0
+$$
+
+$$
+\boxed{\hat{\theta} = \frac{\bar{X}}{2}}
+$$
+
+
+### (b)
+$$
+L = \frac{1}{2\theta ^ {3n}} \pi X^2_i e -\frac{\sum X_i}{\theta}
+$$
+
+$$
+lnL = ln\frac{1}{2} - 3nln\theta + 2 \sum ln X_i - \frac{\sum X_i}{\theta}
+$$
+
+$$
+\frac{\partial}{\partial \theta}lnL=0
+$$
+
+$$
+-\frac{3n}{\theta} + \frac{\sum X_i}{\theta^2} = 0
+$$
+
+$$
+\boxed{\hat{\theta}=\frac{\bar{X}}{3}}
+$$
+
+### (c)
+$$
+L = \frac{1}{2}e^{-\sum|X_i-\theta|}
+$$
+
+
+
+## 6.4-6
+$$
+L = \frac{1}{(\sigma\sqrt{2\pi})^n} e^{-\frac{\sum(x_i-\mu)^2}{2\sigma^2}}
+$$
+
+```{r}
+31.5 + 36.9 + 33.8 + 30.1 + 33.9 +  35.2 + 29.6 + 34.4 + 30.5 + 34.2 +  31.6 + 36.7 + 35.8 + 34.5 + 32.7 
+```
+
+
+$\bar{x}=$
+```{r}
+501.4/15
+```
+
+
+$\hat{\sigma^2}=$
+```{r}
+((31.5 - 33.43)^2 + (36.9 - 33.43)^2 + (33.8 -33.43)^2 + (30.1-33.43)^2 + (33.9 - 33.43)^2 + (35.2 - 33.43)^2 + (29.6-33.43)^2 + (34.4-33.43)^2 + (30.5 - 33.43)^2 + (34.2-33.43)^2 + (31.6 - 33.43)^2 + (36.7 - 33.43)^2 + (35.8-33.43)^2 + (34.5-33.43)^2 + (32.7-33.43)^2) / 15
+```
+
+$\boxed{5.097967}$
+
+
+## 6.4-7
+### (a)
+```{r}
+# Define the PDF function
+pdf_function <- function(x, theta) {
+  theta * x^(theta - 1)
+}
+
+# Define the range of x and the theta values
+x <- seq(0.01, 1, length.out = 500)  
+thetas <- c(1/2, 1, 2)
+colors <- c("blue", "red", "black")
+
+
+plot(NULL, xlim = c(0, 1), ylim = c(0, 6), xlab = "x", ylab = "pdf",
+     main = "PDF of x", cex.main = 1.2, cex.lab = 1.1)
+
+# Add lines for each theta
+for (i in seq_along(thetas)) {
+  y <- pdf_function(x, thetas[i])
+  lines(x, y, col = colors[i], lwd = 2)
+}
+
+# create a legend
+legend("topright", legend = paste("θ =", thetas), col = colors, lty = 1, lwd = 2)
+
+```
+
+
+
+### (b)
+$$
+L = \theta^n \pi x^{(\theta-1)}
+$$
+
+$$
+lnL= ln\theta^n \pi x^{(\theta-1)}
+$$
+
+$$
+=nln\theta+(\theta-1)\sum lnx
+$$
+
+$$
+\frac{\partial}{\partial\theta}lnL=0
+$$
+
+$$
+\frac{n}{\theta} + \sum lnx = 0
+$$
+
+$$
+\hat{\theta} = \frac{-n}{\sum lnx}
+$$
+
+$$
+\boxed{\hat{\theta}=\frac{-n}{ln(\pi x)}}
+$$
+
+### (c)
+$$
+L = \theta^n \pi x^{(\theta-1)}
+$$
+
+$$
+MLE \ of \ \theta \ is \ \frac{-n}{ln(\pi x)}
+$$
+
+n = 10
+
+dataset (i)
+```{r}
+# Dataset (i)
+data_i <- c(0.0256, 0.3051, 0.0278, 0.8971, 0.0739, 0.3191, 0.7379, 0.3671, 0.9763, 0.0102)
+
+# Calculate MLE1 and MOM1
+n <- length(data_i)
+mean_x <- mean(data_i)
+sum_log_x <- sum(log(data_i))
+
+
+
+theta_mle_i <- -n / sum_log_x
+theta_mom_i <- mean_x / (1 - mean_x)
+
+theta_mle_i
+theta_mom_i
+```
+
+$\boxed{\theta_{MLE1}=0.5492604}$
+$\boxed{\theta_{MOM1}=0.5974696}$
+
+
+
+dataset (ii)
+```{r}
+# Dataset (ii)
+data_ii <- c(0.9960, 0.3125, 0.4374, 0.7464, 0.8278, 0.9518, 0.9924, 0.7112, 0.2228, 0.8609)
+
+# Calculate MLE2 and MOM2
+mean_x <- mean(data_ii)
+sum_log_x <- sum(log(data_ii))
+
+theta_mle_ii <- -n / sum_log_x
+theta_mom_ii <- mean_x / (1 - mean_x)
+
+theta_mle_ii
+theta_mom_ii
+```
+
+$\boxed{\theta_{MLE2}=2.210124}$
+$\boxed{\theta_{MOM2}=2.400435}$
+
+dataset (iii)
+```{r}
+# Dataset (iii)
+data_iii <- c(0.4698, 0.3675, 0.5991, 0.9513, 0.6049, 0.9917, 0.1551, 0.0710, 0.2110, 0.2154)
+
+# Calculate MLE3 and MOM3
+mean_x <- mean(data_iii)
+sum_log_x <- sum(log(data_iii))
+
+theta_mle_iii <- -n / sum_log_x
+theta_mom_iii <- mean_x / (1 - mean_x)
+
+theta_mle_iii
+theta_mom_iii
+```
+
+$\boxed{\theta_{MLE3}=0.9588026}$
+$\boxed{\theta_{MOM3}=0.8645585}$
+
+## 6.4-10
+### (a)
+$$
+geometric \ distribution \ p(x) = (1-p)^{x-1}, \ x=0,1,2,....
+$$
+
+$$
+The \ mean \ of X \ is \frac{1}{p}
+$$
+
+We can equate $\frac{1}{p} = \bar{x}$ in order to obtain the estimator of p by using the method of moments
+
+$$
+\frac{1}{p} = \bar{x}
+$$
+
+$$
+\hat{p} = \frac{1}{\bar{x}}
+$$
+
+$$
+= \boxed{\frac{n}{\sum x}}
+$$
+
+### (b)
+It is reasonably intuitive because using the method of moments as an estimator of (p) highlights the direct relationship between the probability of success (p) and the expected number of trials (E(X)) in the geometric distribution. Since $(E(X) = \frac{1}{p}$, the method-of-moments approach leverages the sample mean $(\bar{X})$ to estimate this relationship, ensuring the estimate for (p) reflects how frequently successes occur in the observed data. A higher sample mean $(\bar{X})$ corresponds to a lower probability of success (p), and vice versa, making the estimate both intuitive and aligned with the distribution's properties.
+
+### (c)
+```{r}
+# Data
+data <- c(3, 34, 7, 4, 19, 2, 1, 19, 43, 2, 22, 4, 19, 11, 7, 1, 2, 21, 15, 16)
+
+sum(data)
+
+# Calculate the sample mean
+mean_x <- mean(data)
+
+# Calculate the method of moments estimate for p
+p_mom <- 1 / mean_x
+
+p_mom
+```
+
+$\boxed{0.07936508}$
+
+## 6.4-12
+### (a)
+
+$$
+p(y) = \binom{n}{y}p^y (1-p)^{n-y}
+$$
+
+$$
+E(Y)=np
+$$
+
+$$
+E(\sum X) = np
+$$
+
+$$
+E(n \bar{X})=np
+$$
+
+$$
+\boxed{E(\bar{X})=p}
+$$
+
+### (b)
+$$
+p(y) = \binom{n}{y}p^y (1-p)^{n-y}
+$$
+
+$$
+V(Y) = np(1-p)
+$$
+
+$$
+V(\sum X) = np(1-p)
+$$
+
+$$
+V(n \bar{X}) = np(1-p)
+$$
+
+$$
+n^2V(\bar{X})=np(1-p)
+$$
+
+$$
+\boxed{V(\bar{X}) = \frac{p(1-p)}{n}}
+$$
+
+### (c)
+$$
+p(y) = \binom{n}{y}p^y (1-p)^{n-y}
+$$
+
+$$
+V(\bar{X}) = \frac{p(1-p)}{n}
+$$
+
+$$
+E[\bar{X}(1-\bar{X}) = E[\bar{X}-\bar{X^2}]
+$$
+
+$$
+= E(\bar{X})-E(\bar{X^2})
+$$
+
+$$
+= E(\bar{X})-V(\bar{X})-E^2(\bar{X})
+$$
+
+$$
+= p - \frac{p(1-p)}{n}-p^2
+$$
+
+$$
+= \frac{np-p(1-p)-np^2}{n}
+$$
+
+$$
+= \frac{np(1-p)-p(1-p)}{n}
+$$
+
+$$
+\boxed{= \frac{(n-1)p(1-p)}{n}}
+$$
+
+### (d)
+$$
+E[c\bar{X}(1-\bar{X})] = p(1-p)
+$$
+
+$$
+cE[\bar{X}-\bar{X^2}] = p(1-p)
+$$
+
+$$
+c[E(\bar{X})-E(\bar{X^2})] = p(1-p)
+$$
+
+$$
+c[E(\bar{X})-V(\bar{X})-E^2(\bar{X})] = p(1-p)
+$$
+
+$$
+c[p-\frac{p(1-p)}{n}-p^2] = p(1-p)
+$$
+
+
+$$
+c[\frac{np-p(1-p)-np^2}{n}] = p(1-p)
+$$
+
+$$
+c[\frac{np(1-p)-p(1-p)}{n}] = p(1-p)
+$$
+
+
+$$
+c[\frac{(n-1)p(1-p)}{n}] = p(1-p)
+$$
+
+$$
+\boxed{c = \frac{n}{n-1}}
+$$
+
+## 6.4-15
+
+$$
+\bar{x} = \frac{\sum x}{n}
+$$
+
+
+```{r}
+6.9 + 7.3 + 6.7 + 6.4 + 6.3 + 5.9 + 7.0 + 7.1 + 6.5 + 7.6 + 7.2 + 7.1 + 6.1 + 7.3 + 7.6 + 7.6 + 6.7 + 6.3 + 5.7 + 6.7 + 7.5 + 5.3 + 5.4 + 7.4 + 6.9 
+```
+
+$\bar{x}=$
+```{r}
+168.5/25
+```
+
+
+$var(x) = \frac{\sum x^2}{n}-\bar{x^2}$
+
+```{r}
+(6.9^2) + (7.3^2) + (6.7^2) + (6.4^2) + (6.3^2) + (5.9^2) + (7.0^2) + (7.1^2) + (6.5^2) + (7.6^2) + (7.2^2) + (7.1^2) + (6.1^2) + (7.3^2) + (7.6^2) + (7.6^2) + (6.7^2) + (6.3^2) + (5.7^2) + (6.7^2) + (7.5^2) + (5.3^2) + (5.4^2) + (7.4^2) + (6.9^2) 
+```
+
+var(x)
+```{r}
+1146.77 / 25 - (6.74^2)
+```
+
+
+$\hat{\theta}=\frac{var(x)}{\bar{x}}$
+```{r}
+0.4432 / 6.74
+```
+
+$\hat{\alpha}=\frac{\bar{x}}{\hat{\theta}}$
+```{r}
+6.74 / 0.06575668
+```
+
+
+$\boxed{\hat{\theta} = 0.06575668}$
+
+$\boxed{\hat{\alpha} = 102.4991}$
+
+
+## 6.4-16
+$$
+\bar{x} = \frac{\sum x}{N}
+$$
+
+```{r}
+3+0+0+1+1+1+1+3+1+1+2+0+1+3+1+0+1+0+2+1+1+2+3+2+2+4+3+1+1+2 
+
+```
+
+
+$\hat{p}=\bar{x}$
+
+```{r}
+44/30
+```
+
+
+```{r}
+8 * 1.466667
+```
+
+$\boxed{11.73334}$
+
+Reasoning:
+Since the expected number of orange balls is proportional to $N_1$ the sample mean is directly informs this relationship. The method of moments ensures consistency with the data by matching the sample mean to the theoretical mean.
+
+
+# Section 6.7
+## 6.7-4
+### (a)
+
+$$
+f(x_1,x_2,....,x_n) = \theta^n \prod_{i=1}^n x_i^{\theta-1}
+$$
+
+$$
+= \theta^n (\prod_{i=1}^n x_i)^{\theta-1}
+$$
+
+$$
+\boxed{Y = \prod_{i=1}^n X_i}
+$$
+
+### (b)
+$$
+L(\theta) = \theta^n (\prod_{i=1}^n x_i)^{\theta-1}
+$$
+
+$$
+lnL(\theta) = nln(\theta) + (\theta-1)ln(\prod_{i=1}^n x_i)
+$$
+
+
+$$
+nln(\theta) + (\theta-1) \sum_{i=1}^n ln x_i
+$$
+
+$$
+\frac{d}{d\theta} lnL(\theta) = \frac{d}{d\theta}(nln\theta + \theta \sum_{i=1}^n lnx_i - \sum_{i=1}^n lnx_i)
+$$
+
+$$
+= \frac{n}{\theta} + \sum_{i=1}^n lnx_i
+$$
+
+$$
+0 = \frac{d}{d\theta}lnL(\theta)
+$$
+
+$$
+0 = \frac{n}{\theta} + \sum_{i=1}^n lnx_i
+$$
+
+$$
+0 = n + \theta \sum_{i=1}^n lnx_i
+$$
+
+$$
+n = - \theta \sum_{i=1}^n lnx_i
+$$
+
+$$
+\theta = - \frac{n}{\sum_{i=1}^n lnx_i}
+$$
+
+$$
+\boxed{\hat{\theta} = - \frac{n}{ln \prod_{i=1}^n x_i}}
+$$
+
+### (c)
+The maximum likelihood estimator is sufficient for $\theta$ because it is a one-to-one function of Y which is a sufficient statistic for $\theta$ as showny by the factorization theorem.
+
+
+## 6.7-7
+### (a)
+$$
+f(x_1, x_2,...,x_n) = p^{n} \prod_{x=1}^{n}(1-p)^{x_{i}-1}
+$$
+
+$$
+= p^{n}(1-p)^{\sum_{i=1}^n x_{i}-n}
+$$
+
+$$
+Y=\sum_{i=1}^{n}X_i
+$$
+
+
+### (b)
+$$
+E(Y) = E(\sum_{i=1}^{n}X_i)
+$$
+
+
+$$
+= \sum_{i=1}^{n} E(X_i)
+$$
+
+
+$$
+= \sum_{i=1}^{n} E(X)
+$$
+
+
+$$
+=nE(X)
+$$
+
+$$
+=n * \frac{1}{p}
+$$
+
+$$
+=\frac{n}{p}
+$$
+
+
+$$
+E(\frac{Y}{n}) = \frac{E(X)}{n}
+$$
+
+
+$$
+= n * \frac{p}{n}
+$$
+
+$$
+= \frac{1}{p}
+$$
+
+
+
+
+
+
+
+

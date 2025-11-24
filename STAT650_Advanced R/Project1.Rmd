@@ -1,0 +1,92 @@
+---
+title: "Project 1"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+```{r setup, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#install.packages("corrplot")
+#install.packages("scales")
+```
+
+
+
+```{r}
+library(tidyverse)
+library(readr)
+library(corrplot)
+library(scales)
+```
+
+
+```{r}
+train <- read_csv("~/Desktop/house-prices-advanced-regression-techniques/train.csv")
+```
+
+
+
+```{r}
+
+train2 <- select(train, SalePrice, LotArea, GrLivArea, YearBuilt, OverallQual, OverallCond, Neighborhood) 
+```
+
+
+
+```{r}
+summary(train2)
+```
+
+
+
+```{r}
+ggplot(train2, aes(x = SalePrice)) +
+  geom_histogram(binwidth = 10000, fill = "blue", color = "black") +
+  labs(title = "Sales Price Distribution", x = "Sale Price", y = "Count") +
+  scale_x_continuous(labels = dollar) +
+  theme_light()
+```
+
+
+
+```{r}
+ggplot(train2, aes(x = GrLivArea, y = SalePrice)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(title = "Living Area vs. Sale Price", x = "Living Area (sq ft)", y = "Sales Price ($)") +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = dollar) +
+  theme_light()
+```
+
+```{r}
+model <- lm(SalePrice ~ GrLivArea + OverallQual + YearBuilt, data = train2)
+summary(model)
+
+```
+
+
+
+```{r}
+ggplot(train2, aes(x = Neighborhood, y = SalePrice, fill = Neighborhood)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Sale Price by Neighborhood", x = "Neighborhood", y = "Sale Price") +
+  scale_y_continuous(labels = dollar_format()) +  
+  theme(legend.position = "none") 
+```
+
+
+
+
+
+

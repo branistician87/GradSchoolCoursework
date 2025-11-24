@@ -1,0 +1,180 @@
+---
+title: 'STAT 630: Homework 2'
+author: ' '
+date: 'Due: September 16th, 2024 at 11:59pm'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+**Exploratory Data Analysis**: The overarching goal of this homework is to explore whether there is any evidence suggestive of discrimination by sex in the employment of the faculty at a single university (University of Washington). To this end, salary data (available on Canvas) was obtained on all faculty members employed by the University during the 1995 academic year. You have been asked to provide an analysis of 1995 salaries with the primary goal of determining whether or not gender discrimination exists with respect to pay. Along with the 1995 salary the following additional variables were also collected:
+
+| Variable    | Description                                                                   |
+|-------------|-------------------------------------------------------------------------------|
+| id          | The anonymous identification number for the faculty member sex                |
+| sex         | Sex of the faculty member (coded as M or F)                                   |
+| degree      | The highest degree obtained by the faculty member (PhD, Professional, Other)  |
+| field       | Field of research during 1995 (Arts, Professional, Other)                     |
+| year_degree | Year highest degree attained                                                  |
+| start_year  | Year starting employment at the university                                    |
+| rank        | Faculty rank as of 1995 (Assistant, Associate, Full)                          |
+| admin       | Does faculty member hold an administrative position as of 1995? (0 = No, 1 = Yes) |
+| salary      | 1995 salary in US dollars                                                     |
+
+```{r, echo = FALSE, message = FALSE}
+library(readr)
+salary <- read_csv(here::here("data/salary.csv"))
+```
+
+1. Coerce `sex`, `degree`, `field`, `rank`, and `admin` to factors.
+
+```{r}
+head(salary)
+```
+
+
+```{r}
+library(readr)
+library(here)
+
+# Coerce the specified variables to factors
+salary$sex <- factor(salary$sex)
+salary$degree <- factor(salary$deg)
+salary$field <- factor(salary$field)
+salary$rank <- factor(salary$rank)
+salary$admin <- factor(salary$admin)
+```
+
+2. Make a new column called `years_uni` and calculate the number of years the instructor has been teaching at the University (note that start year is recorded using only the last two digits of the year, e.g., 95 rather than 1995).
+
+```{r}
+#install.packages("dplyr")
+library(dplyr)
+```
+
+
+```{r}
+salary <- salary %>%
+  mutate(years_uni = 95 - (start_year))
+```
+
+3. Using `gtsummary()` create a table of descriptive statistics for each variable in the dataset, stratified by `sex`.
+
+```{r}
+#install.packages("gtsummary")
+library(gtsummary)
+```
+
+```{r}
+salary %>% 
+  tbl_summary(by = sex,
+              digits = list(
+                all_continuous() ~ c(2,2)
+              ),
+              statistic = list(
+                all_continuous() ~ "{mean} ({sd})"
+               ))
+```
+
+
+
+
+4. Based on the table you created above, does there appear to be sex discrimination at the University? Explain in 2-3 sentences.
+On average, male faculty earn $6,731.64 while female faculty earn $5,396.91. Also male faculty members hold more senior positions such as Full professors at 61% males while females hold full professors at 31%.
+
+
+5. Choose what you believe to be the top two confounding variables in the relationship between `sex` and `salary`. Explain how each confounding variable is related to both `sex` and `salary`.
+I believe that rank and years of experience are the top two confounding variabels between the relationship of sex and salar. I believe Faculty Rank of assistant, associate, and full professor is closely tied to salary because higher ranks generally earn more money. Because of this there are higher ranking males that are earning more money than their femal counter parts. While years of experience is another confounding variable that generally earns more money as well. The data shows that on averagemales have more experience at the university level at 15.38 years compared to 9.53 years for females.
+
+6. Using the R package of your choice, plot the relationship between `sex` and `rank`.
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+```
+
+```{r}
+ggplot(data = salary, aes(x = rank, fill = sex)) +
+  geom_bar(position = "dodge", color = "black") +
+  labs(title = "Relationship Between Sex and Rank",
+       x = "Rank",
+       y = "Count",
+       fill = "Sex") +
+  theme_dark()
+```
+
+
+7. Using `ggplot2`, plot the relationship between `sex`, `salary`, and one of your confounding variables. 
+
+```{r}
+ggplot(data = salary, aes(x = sex, y = salary, fill = sex)) +
+  geom_boxplot() +
+  facet_wrap(~rank) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  labs(title = "Relationship Between Sex, Salary, and Rank",
+       x = "Sex",
+       y = "Salary",
+       fill = "Sex") +
+  theme_dark()
+
+```
+
+8. Comment on how the relationship between `sex` and `salary` changes for different values of your confounding variable in 1-2 sentences.
+From the boxplot, we can see that sex and salary changes across the different ranks of faculty. Again males tend to have higher salaries than females across all ranks. However it is easier to see the disparity between salaries and sex for the Full Professor level. What this suggests is that rank plays a significant role between salary and difference between sexes.
+
+
+Challenge question: Visualize the relationship between `sex`, `salary`, and [both]{.underline} of your confounding variables in a single plot.
+
+```{r}
+ggplot(data = salary, aes(x = years_uni, y = salary, color = sex, shape = rank)) +
+  geom_point(alpha = 1) +  
+  geom_smooth(method = "lm", se = FALSE) +  
+  scale_y_continuous(labels = scales::dollar_format()) + 
+  labs(title = "Relationship Between Sex, Salary, Years at University, and Rank",
+       x = "Years at University",
+       y = "Salary",
+       color = "Sex") +
+  theme_dark()
+
+```
+
+9. Create a QQ-plot of salary. Use `qqline()` to ad a reference line to the plot. Do the points on the QQ-plot fall on the straight line? Comment on any deviations in the data from the normal distribution.
+
+```{r}
+qqnorm(salary$salary, main = "QQ-Plot of Salary")
+qqline(salary$salary, col = "red", lwd = 2)
+```
+
+10. Calculate the proportion of salaries in the dataset that are greater than $8,000. 
+
+```{r}
+high_salary <- sum(salary$salary > 8000) / nrow(salary)
+high_salary
+```
+
+11. Let us assume that `salary` is normally distributed regardless of what you found in Question 9. With the mean and standard deviation of `salary`, calculate the probability that a randomly selected salary is greater than $8,000 using the `pnorm()` function. Comment on how this answer compares to the proportion you found in Question 10. Why are are they similar or different?
+
+```{r}
+mean_salary <- mean(salary$salary)
+sd_salary <- sd(salary$salary)
+
+p <- 1 - pnorm(8000, mean = mean_salary, sd = sd_salary)
+
+p
+```
+
+The probability calculated under normally distributed conditions 21.5% is very close to the actual proportion of salraies greater than $8,000 of 20.2%. The reason why these two values are similar is because the normal distribution is still a reasonable approximation for the central tendancy of the data. However, they are not identical because the actual salaries from the data more than likely deviates from normality.
+
+12.Was there anything you found difficult with this homework? What topics (if any) do you feel you still need more work on?
+
+13) Give yourself a rating for this assignment using the EMRN rubric.
+
+E - Excellent
+
+M - Meeting expectations
+
+R - Revision needed
+
+N - Not assessible (mostly blank or did not complete)

@@ -1,0 +1,1207 @@
+---
+title: "Keck_Brandon_STAT620_HW6"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Section 4.1
+##### Exercise 4.1-3
+
+###### (a) Find fX (x), the marginal pmf of X. 
+
+$$
+f(x,y) = \frac{x+y}{32} , x = 1,2  \ and \ y = 1, 2, 3, 4.
+$$
+
+
+$$
+f_x(x) = \sum_{y=1}^{4} 
+$$
+
+
+$$
+= \frac{x+1}{32} + \frac{x+2}{32} + \frac{x+3}{32} + \frac{x+4}{32}
+$$
+
+
+$$
+= \boxed{f_x(x)=\frac{4x+10}{32}, x = 1,2}
+$$
+
+
+
+
+
+###### (b)Find fY (y), the marginal pmf of Y. 
+
+
+$$
+f(x,y) = \frac{x+y}{32}, \ x = 1,2 \ and \ y=1,2,3,4.
+$$
+
+
+$$
+f_y(y) = \sum_{x=1}^{2}
+$$
+
+
+$$
+= \frac{1+y}{32} + \frac{2+y}{32}
+$$
+
+
+$$
+= \boxed{f_y(y) = \frac{3+2y}{32}, \ y=1,2,3,4}
+$$
+
+
+###### (c) Find P(X > Y). 
+The possible paris for x,y are (1,1), (1,2), (1,3), (1,4),(2,1), (2,2), (2,3) and (2,4)
+
+The only pair that satisfies these conditions wher x > y is (2,1)
+
+$$
+P(X>Y) = \frac{2+1}{32}
+$$
+
+$$
+=\boxed{\frac{3}{32}}
+$$
+
+###### (d) Find P(Y = 2X). 
+The only pair that satisfies these conditions where Y = 2x is (1,2) and (2,4)
+
+
+$$
+\frac{1+2}{32} + \frac{2+4}{32}
+$$
+
+$$
+\boxed{\frac{9}{32}}
+$$
+
+
+
+###### e Find P(X + Y = 3). 
+The possible paris for x,y are (1,1), (1,2), (1,3), (1,4),(2,1), (2,2), (2,3) and (2,4)
+
+(1,2), (2,1) satisfies this condition.
+
+$$
+\frac{1+2}{32} + \frac{2+1}{32}
+$$
+
+
+$$
+\boxed{\frac{6}{32}}
+$$
+
+
+###### (f) Find P(X ≤ 3 − Y). 
+
+
+The possible paris for x,y are (1,1), (1,2), (1,3), (1,4),(2,1), (2,2), (2,3) and (2,4)
+
+
+
+$$
+P(X \leq 3-Y)
+$$
+
+
+$$
+P(X+Y \leq 3)
+$$
+
+
+
+The only pairs that satisfies these conditions is (1,1), (1,2) and (2,1)
+
+
+$$
+\frac{1+1}{32} + \frac{1+2}{32} + \frac{2+1}{32}
+$$
+
+
+
+$$
+=\boxed{\frac{1}{4}}
+$$
+
+
+
+
+###### (g) Are X and Y independent or dependent? Why or why  not? 
+
+Two discrete variables are said to be independent if P(X=x, Y=y) = P(X=x)P(Y=y) for all (x,y).
+
+$$
+f_x(x)= \frac{4x+10}{32} ,  \ x = 1,2
+$$
+
+
+
+$$
+f_y(y)= \frac{3+2y}{32}, \ y = 1,2,3,4
+$$
+
+
+
+$$
+f_x(x)*f_y(y) = \frac{4x+10}{32} * \frac{3+2y}{32}
+$$
+
+
+
+
+$$
+= \frac{(4x+10) * (3+2y)}{1024}
+$$
+
+
+
+$$
+f(x,y) \neq f_x(x) * f_y(y)
+$$
+
+
+Therefore, the random variables X and Y are dependent
+
+
+###### (h) Find the means and the variances of X and Y. 
+
+```{r}
+x <- c(1, 2)
+px <- c(14/32, 18/32)
+
+sum(x * px)
+```
+
+
+```{r}
+sum(x^2 * px) - (1.5625)^2
+```
+
+
+
+$$
+\boxed{E(X)=1.5625, \ V(X) = 0.2460938}
+$$
+
+
+```{r}
+y <- c(1, 2, 3, 4)
+py <- c(5/32, 7/32, 9/32, 11/32)
+
+sum(y * py)
+```
+
+
+
+```{r}
+sum(y^2 * py) - (2.8125)^2
+```
+
+
+
+$$
+\boxed{E(Y)= 2.8125 , \ V(Y) = 1.152344}
+$$
+
+
+\n
+
+## Section 4.2
+##### Exercise 4.2-9 f(x, y) = 1/4, (x, y) ∈ S = {(0, 0),(1, 1),(1, −1),(2, 0)}. 
+
+###### (a) Are X and Y independent? 
+
+To determine if X and Y are independet we need to check if each probability join event P(X=x, Y=y) = P(X=x)P(Y=y)
+
+Marginal pmf of X
+
+| X | Probability |
+|:-:|:-----------:|
+| 0 | $\frac{1}{4}$ |
+| 1 | $\frac{1}{4}+ \frac{1}{4} = \frac{1}{2}$|
+| 2 | $\frac{1}{4}$ |
+
+
+\
+
+
+
+$$
+\frac{1}{4} + \frac{1}{2} + \frac{1}{4}
+$$
+
+
+$$
+= 1 
+$$
+
+
+Therefore, this is a valid probability mass function because all values of probabilities are positive and add to 1
+
+
+Marginal pmf of Y
+
+| Y | Probability |
+|:-:|:-----------:|
+| -1 | $\frac{1}{4}$ |
+| 0 | $\frac{1}{4} + \frac{1}{4}= \frac{1}{2}$ |
+| 1 | $\frac{1}{4}$ |
+
+
+
+
+
+$$
+\frac{1}{4} + \frac{1}{2} + \frac{1}{4}
+$$
+
+
+$$
+= 1 
+$$
+
+
+Therefore, this is a valid probability mass function because all values of probabilities are positive and add to 1.
+
+
+$$
+P(X=x, Y=y) = P(X=x)P(Y=y)
+$$
+
+
+$$
+For \  (0,0) \ P(X=0, Y=0) = \frac{1}{4}
+$$
+
+
+
+$$
+P(X=0)P(Y=0) = (\frac{1}{4}) (\frac{1}{2}) = \frac{1}{8}
+$$
+
+
+$$
+Since \ \frac{1}{4} \neq \frac{1}{8}
+$$
+
+$$
+\boxed{X \ and \ Y \ are \ dependent}
+$$
+
+
+###### (b) Calculate Cov(X, Y) and ρ. 
+
+$$
+\mu_x = E(X) = \sum x * P(X=x)
+$$
+
+
+$$
+\mu_x = (0) * (\frac{1}{4}) + (1) * \frac{1}{2} + (2) * \frac{1}{4}
+$$
+
+
+$$
+\mu_x= 1
+$$
+
+
+
+
+$$
+\mu_y = E(Y) = \sum y * P(Y=y)
+$$
+
+
+
+
+$$
+\mu_y = (-1) * (\frac{1}{4}) + (0) * \frac{1}{2} + (1) * \frac{1}{4}
+$$
+
+
+
+
+$$
+\mu_y = 0
+$$
+
+
+
+$$
+Cov(X,Y) = E(X,Y) - \mu_x \mu_y
+$$
+
+
+
+$$
+(0)(0)(\frac{1}{4}) + (1)(1)(\frac{1}{4}) + (1)(-1)(\frac{1}{4}) + (2)(0)(\frac{1}{4}) - (1)(0)
+$$
+
+
+
+$$
+\boxed{COV(X,Y) = 0}
+$$
+
+
+
+$$
+\rho = \frac{Cov(X,Y)}{\sigma_X \sigma_Y} = \frac{\sigma_{XY}}{\sigma_X \sigma_Y}
+$$
+
+
+
+$$
+E(X^2) = (0)^2 * (\frac{1}{4}) + (1)^2 * \frac{1}{2} + (2)^2 * \frac{1}{4}
+$$
+
+
+$$
+E(X^2) = 1.5
+$$
+
+
+$$
+\sigma^2_X = E(X^2)-[E(X)]^2
+$$
+
+
+$$
+1.5 - (1^2)
+$$
+
+
+$$
+= 0.5
+$$
+
+
+$$
+E(Y^2) = (-1)^2 * (\frac{1}{4}) + (0)^2 * \frac{1}{2} + (1)^2 * \frac{1}{4}
+$$
+
+
+$$
+E(Y^2) = \frac{1}{2}
+$$
+
+
+
+$$
+\sigma^2_Y=E(Y^2)- [E(Y)]^2
+$$
+
+
+
+
+$$
+0.5-(0^2)
+$$
+
+
+
+$$
+=0.5
+$$
+
+
+
+$$
+Corr(X,Y) = \frac{Cov(X,Y)}{\sqrt{var(X)}\sqrt{var(Y)}}
+$$
+
+
+
+$$
+\frac{0}{\sqrt{0.5}\sqrt{0.5}}
+$$
+
+
+
+$$
+\boxed{\rho = 0}
+$$
+
+\n
+
+## Section 4.4
+##### Exercise 4.4-2 Let X and Y have the joint pdf f(x, y) = x + y,  0 ≤ x ≤ 1, 0 ≤ y ≤ 1. 
+
+###### (a)  
+
+Marginal pdf of X:
+
+$$
+f_X(X) = \int_{-\infty}^{\infty} f(x,y)dy
+$$
+
+
+
+$$
+\int_0^1 x+y \ dy
+$$
+
+
+
+$$
+= xy +\frac{y^2}{2}]_0^1
+$$
+
+
+$$
+x+ \frac{1}{2}
+$$
+
+
+$$
+\boxed{f_X(X) = x + \frac{1}{2},\ 0 \le x \le 1}
+$$
+
+
+Marginal pdf of Y:
+$$
+f_Y(Y) = \int_{-\infty}^{\infty} f(X,Y)dx
+$$
+
+
+
+$$
+\int_0^1 x + y \ dx
+$$
+
+
+
+$$
+\frac{x^2}{2} + xy]_0^1
+$$
+
+
+
+$$
+=y+ \frac{1}{2}
+$$
+
+
+$$
+\boxed{f_Y(Y) = y + \frac{1}{2}, \ 0 \le y \le 1}
+$$
+
+
+$$
+Two \ random \ variables \  x \ and \ y \ are \ independent \ if \ f_{X,Y}(X,Y)= f_{X}(X)f_{Y}(Y)
+$$
+
+
+$$
+f_{X}(X)*f_{Y}(Y) = (x +\frac{1}{2}) * (y + \frac{1}{2})
+$$
+
+
+
+$$
+= (xy + \frac{x}{2}+ \frac{y}{2}+\frac{1}{4})
+$$
+
+
+
+$$
+x+y \neq (xy + \frac{x}{2}+ \frac{y}{2}+\frac{1}{4})
+$$
+
+
+
+$$
+\boxed{X \ and \ Y \ dependent}
+$$
+
+
+
+###### (b)
+###### (i)
+
+$$
+E(X) = \int_{-\infty}^{\infty} x * f_x(x) \ dx
+$$
+
+
+
+$$
+E(X) = \int_{0}^{1} x * (x+\frac{1}{2}) \ dx
+$$
+
+
+
+$$
+\int_{0}^{1} x^2+\frac{x}{2} dx
+$$
+
+
+
+$$
+\frac{x^3}{3}+ \frac{x^2}{4}]_0^1
+$$
+
+
+
+$$
+= \frac{1}{3}+ \frac{1}{4} = \frac{7}{12}
+$$
+
+
+$$
+\boxed{\frac{7}{12}}
+$$
+
+###### (ii)
+
+$$
+E(Y)= \int_0^1 y * (y+ \frac{1}{2})dy
+$$
+
+
+
+$$
+\int_0^1 y^2+\frac{y}{2}dy
+$$
+
+
+$$
+\frac{y^3}{3} + \frac{y^2}{4}]_0^1
+$$
+
+
+$$
+= \frac{1}{3}+ \frac{1}{4} = \frac{7}{12}
+$$
+
+
+
+$$
+\boxed{\frac{7}{12}}
+$$
+
+
+###### (iii)
+$$
+E(X^2) = \int_0^1 x^2(x+\frac{1}{2})dx
+$$
+
+$$
+\int_0^1 x^3 + \frac{x^2}{2}dx
+$$
+
+
+$$
+\frac{x^4}{4}+ \frac{x^3}{6}]_0^1
+$$
+
+
+$$
+\frac{1}{4}+ \frac{1}{6}= \frac{5}{12}
+$$
+
+
+
+$$
+Var(X) = \frac{5}{12} - (\frac{7}{12})^2
+$$
+
+
+$$
+\boxed{Var(X)=\frac{11}{144}}
+$$
+
+
+###### (iv)
+
+$$
+E(Y^2) = \int_0^1 y^2 * (y+\frac{1}{2})dy
+$$
+
+
+$$
+\int_0^1 y^3 + \frac{y^2}{2}dy
+$$
+
+
+$$
+\frac{y^4}{4}+ \frac{y^3}{6}]_0^1
+$$
+
+
+$$
+\frac{1}{4}+ \frac{1}{6}= \frac{5}{12}
+$$
+
+
+$$
+Var(Y) = \frac{5}{12} - (\frac{7}{12})^2
+$$
+
+
+$$
+\boxed{Var(Y)= \frac{11}{144}}
+$$
+
+\n
+
+##### Exercise 4.4-4
+###### (a) Find P(0 ≤ X ≤ 1/2). 
+
+
+Marginal pdf of X:
+
+$$
+f_X(X) = \int_{x^2}^1 \frac{3}{2}dy
+$$
+
+
+$$
+\frac{3}{2}y]_{x^2}^1
+$$
+
+
+$$
+f_X(X)=\frac{3}{2}- \frac{3}{2}x^2 , x^2 \le y \le 1
+$$
+
+
+Marginal pdf of Y:
+$$
+f_Y(Y)= \int_0^1 \frac{3}{2}dx
+$$
+
+
+$$
+\frac{3}{2}x]_0^1
+$$
+
+
+$$
+\frac{3}{2}(1)-\frac{3}{2}(0) = \frac{3}{2}
+$$
+
+$$
+f_Y(Y) = \frac{3}{2} , 0 \le x \le 1
+$$
+
+
+
+$$
+P(0 \le X \le \frac{1}{2})
+$$
+
+
+$$
+\int_{0}^{\frac{1}{2}} \frac{3}{2}-\frac{3}{2}x^2dx
+$$
+
+
+$$
+\frac{3}{2}x-\frac{3}{2} \frac{x^3}{3}]_0^{\frac{1}{2}}
+$$
+
+
+$$
+= \frac{3}{2}(\frac{1}{2}) - \frac{1}{2}(\frac{1}{2})^3
+$$
+
+
+$$
+=\boxed{\frac{11}{16}}
+$$
+
+
+
+###### (b) Find P(1/2 ≤ Y ≤ 1). 
+
+$$
+P(\frac{1}{2} \le Y \le 1) = \int_{\frac{1}{2}}^1 \frac{3}{2}dx
+$$
+
+
+
+$$
+= \frac{3}{2}x]_{\frac{1}{2}}^1
+$$
+
+
+$$
+\frac{3}{2}(1) - \frac{3}{2}(\frac{1}{2})
+$$
+
+
+$$
+=\boxed {\frac{3}{4}}
+$$
+
+
+###### (c) Find P(X ≥ 1/2, Y ≥ 1/2). 
+
+$$
+P(X \ge \frac{1}{2}, Y \ge \frac{1}{2}) = \int_{\frac{1}{2}}^1 \int_{\frac{1}{2}}^1 \frac{3}{2}dxdy
+$$
+
+
+$$
+= \int_{\frac{1}{2}}^1 \frac{3}{2}x]_{\frac{1}{2}}^1dy
+$$
+
+
+$$
+\int_{\frac{1}{2}}^1 \frac{3}{2}(1)- \frac{3}{2}(\frac{1}{2})dy
+$$
+
+
+$$
+= \int_{\frac{1}{2}}^1 \frac{3}{4}dy
+$$
+
+
+$$
+\frac{3}{4}y]_{\frac{1}{2}}^1
+$$
+
+
+
+$$
+= \frac{3}{4}(1) - \frac{3}{4}(\frac{1}{2})
+$$
+
+
+$$
+=\boxed{\frac{3}{8}}
+$$
+
+
+
+###### (d) Are X and Y independent? Why or why not? 
+
+$$
+P(X=x, Y=y) = P(X=x)P(Y=y) \ for \ all \ x \ and \ y
+$$
+
+
+$$
+f_X(X) * F_Y(Y) = (\frac{3}{2} - \frac{3}{2}x^2) * \frac{3}{2}
+$$
+
+
+$$
+= \frac{9}{4}- \frac{9}{4}x^2
+$$
+
+
+$$
+f(x,y) \neq f_X(X)* f_Y(Y)
+$$
+
+
+$$
+Therefore, \ x \ and \ y \ are \ not \ independent.
+$$
+
+\n
+
+##### Exercise 4.4-14
+ 
+draw a graph that illustrates the domain of the pdf 
+```{r}
+# Define the x and y sequences
+x <- seq(-0.2, 1.2, length = 50)
+y <- seq(-0.2, 1.2, length = 50)
+n <- length(x)
+
+# Create an empty matrix for the function values
+fxy <- matrix(0, nrow = n, ncol = n)
+
+# Fill the matrix with the values of the function
+for (i in 1:n) {
+  for (j in 1:n) {
+    if (x[i] >= 0 & x[i] <= 1 & y[j] >= 0 & y[j] <= 1 & x[i] <= y[j]) {  # Conditions for 0 <= x <= y <= 1
+      fxy[i, j] <- 8 * x[i] * y[j]  # f(x, y) = 8xy
+    }
+  }
+}
+
+# Plot the 3D perspective plot
+persp(x, y, fxy, zlim = c(0, 8), col = 'yellow', theta = -30, phi = 30, ticktype = "detailed",
+      xlab = "X", ylab = "Y", zlab = "f(x, y)")
+
+```
+
+###### (a) Find the marginal pdfs of X and Y.
+
+Marginal pdf of X, 
+$$
+f_X(X) = \int_{x}^1 8xy \ dy
+$$
+
+
+$$
+= 8x \int_x^1 y \ dy
+$$
+
+
+$$
+=8x [\frac{y^2}{2}]_x^1
+$$
+
+
+$$
+= 8x(\frac{1}{2}- \frac{x^2}{2})
+$$
+
+
+$$
+= 4x(1-x^2)
+$$
+
+
+Thus, the marginal pdf of X is:
+$$
+\boxed{f_X(X) = 4x(1-x^2), \ 0 \le x \le 1}
+$$
+
+
+The marginal pdf of Y,
+$$
+f_Y(Y) = \int_0^y 8xy \ dx
+$$
+
+
+$$
+= 8y \int_0^yx \ dx
+$$
+
+
+$$
+=8y [\frac{x^2}{2}]_0^y
+$$
+
+
+$$
+= 8y * \frac{y^2}{2}
+$$
+
+$$
+= 4y^3
+$$
+
+
+Thus, the marginal pdf of Y:
+$$
+\boxed{=f_Y(Y)=4y^3, \ 0 \le y \le 1}
+$$
+
+
+###### (b) Compute μX, μY, σ2 X, σ2 Y, Cov(X, Y), and ρ. 
+
+$\mu_x:$
+
+
+$$
+\mu_x = E(X) = \int_0^1 x * f_X(X) \ dx
+$$
+
+
+$$
+= \int_0^1 x * (4x(1-x^2) \ dx
+$$
+
+
+$$
+= \int_0^1 x *(4x-4x^3) \ dx
+$$
+
+
+$$
+= \int_0^1 4x^2 - 4x^4 \ dx
+$$
+
+
+$$
+= \frac{4x^3}{3}- \frac{4x^5}{5}]_0^1
+$$
+
+
+$$
+= \frac{4(1)^3}{3} - \frac{4(1)^5}{5}
+$$
+
+
+$$
+= \frac{4}{3} - \frac{4}{5} = \frac{8}{15}
+$$
+
+
+$$
+\boxed{\mu_X = \frac{8}{15}}
+$$
+
+
+$\mu_Y:$
+
+$$
+\mu_Y = E(Y) = \int_0^1 y * 4y^3 \ dy
+$$
+
+
+$$
+=\int_0^1 4y^4 \ dy
+$$
+
+
+$$
+= \frac{4y^5}{5}]_0^1
+$$
+
+
+$$
+\boxed{\mu_Y =\frac{4}{5}}
+$$
+
+
+$\sigma^2_X = Var(X):$
+
+
+$$
+\sigma^2_X = E(X^2) - (\mu_X)^2
+$$
+
+
+$$
+E(X^2) = \int_0^1 x^2 f_X(X) \ dx = \int_0^1 x^2 * (4x-4x^3) \ dx
+$$
+
+
+$$
+= \int_0^1 4x^3-4x^5 \ dx
+$$
+
+
+$$
+= \frac{4x^4}{4} - \frac{4x^6}{6}]_0^1
+$$
+
+
+$$
+= \frac{4(1)^4}{4} - \frac{4(1)^6}{6} = \frac{4}{4} - \frac{4}{6}
+$$
+
+
+$$
+= 1 - \frac{4}{6} = \frac{1}{3}
+$$
+
+
+$$
+\sigma^2_X = E(X^2) - (\mu_X)^2 = \frac{1}{3} - (\frac{8}{15})^2
+$$
+
+
+$$
+= \frac{1}{3} - \frac{64}{225} = \frac{11}{225}
+$$
+
+
+$$
+Thus, \ \boxed{\sigma^2_X = \frac{11}{225}}
+$$
+
+
+$\sigma^2_Y = Var(Y):$
+
+$$
+\sigma^2_Y = E(Y^2)- (\mu_Y)^2
+$$
+
+
+$$
+E(Y^2) = \int_0^1 y^2 * f_Y(Y) \ dy = \int_0^1 y^2 * 4y^3 \ dy
+$$
+
+
+$$
+= \int_0^1 4y^5 \ dy
+$$
+
+
+$$
+= \frac{4y^6}{6}]_0^1
+$$
+
+
+$$
+= \frac{4}{6}
+$$
+
+
+$$
+\sigma^2_Y = E(Y^2)-(\mu_Y)^2 = \frac{4}{6} - (\frac{4}{5})^2
+$$
+
+
+$$
+=\frac{4}{6}-\frac{16}{25} = \frac{2}{75}
+$$
+
+
+$$
+Thus, \ \boxed{\sigma^2_Y = \frac{2}{75}}
+$$
+
+
+$Cov(X,Y):$
+
+
+$$
+Cov(X,Y) = E(XY)- \mu_X\mu_Y
+$$
+
+
+$$
+E(XY) = \int_0^1 xy * 8xy \ dxdy = \int_0^1 \int_0^y 8x^2y^2 \ dxdy
+$$
+
+
+$$
+= \int_0^1 8y^2 \int_0^y x^2 dxdy = \int_0^1 8y^2 [\frac{x^3}{3}]_0^y dy
+$$
+
+
+$$
+= \int_0^18y^2 * \frac{y^3}{3} dy = \int_0^1 \frac{8y^5}{3}dy
+$$
+
+
+$$
+=\frac{8y^6}{18}]_0^1
+$$
+
+
+$$
+\boxed{E(XY) = \frac{8}{18}}
+$$
+
+
+$$
+Cov(X,Y) = E(XY) - \mu_X\mu_Y
+$$
+
+
+$$
+= \frac{8}{18} - (\frac{8}{15})(\frac{4}{5}) 
+$$
+
+
+$$
+\boxed{Cov(X,Y)= \frac{4}{225}}
+$$
+
+
+$\rho(Correlation \ Coefficient):$
+
+$\rho = \frac{Cov(X,Y)}{\sigma_X \sigma_Y}$
+
+```{r}
+(4/225)/((sqrt(11/225))*(sqrt(2/75)))
+```
+
+
+$$
+\boxed{\rho = 0.492366}
+$$
+
+###### (c)
+
+
+$$
+Y = \mu_Y + \frac{\rho \sigma_Y}{\sigma_X}(X - \mu_X)
+$$
+
+
+$$
+\mu_X = \frac{8}{15}
+$$
+
+
+$$
+\mu_Y = \frac{4}{5}
+$$
+
+
+
+$$
+\sigma^2_X = \frac{11}{225} = \sigma_X = \sqrt{\frac{11}{225}}
+$$
+
+
+$$
+\sigma^2_Y = \frac{2}{75} = \sigma_Y = \sqrt{\frac{2}{75}}
+$$
+
+$$
+Cov(X,Y) = \frac{4}{225}
+$$
+
+
+$$
+\sigma_X = \sqrt{\frac{11}{225}} = \frac{\sqrt{11}}{15}
+$$
+
+
+$$
+\sigma_Y = \sqrt{\frac{2}{75}}= \frac{\sqrt2}{5\sqrt{3}} = \frac{\sqrt{6}}{15}
+$$
+
+
+$$
+\rho = \frac{Cov(X,Y)}{\sigma_X\sigma_Y}
+$$
+
+
+$$
+\rho = \frac{\frac{4}{225}}{\sqrt{\frac{11}{15}}*\frac{\sqrt{6}}{15}}
+$$
+
+
+$$
+\frac{\frac{4}{225}}{\frac{\sqrt{66}}{225}} = \frac{4}{\sqrt{66}}
+$$
+
+
+$$
+\frac{\rho \sigma_Y}{\sigma_X} = \frac{\frac{4}{\sqrt{66}}*\frac{\sqrt{6}}{15}}{\frac{\sqrt{11}}{15}}
+$$
+
+
+$$
+\frac{4*\sqrt{6}}{\sqrt{66}* \sqrt{11}} = \frac{4}{11}
+$$
+
+
+$$
+\boxed{Y = \frac{4}{5} + \frac{4}{11}(X - \frac{8}{15})}
+$$
+
+
+
+
+
+

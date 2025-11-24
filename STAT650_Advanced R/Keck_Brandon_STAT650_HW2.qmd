@@ -1,0 +1,116 @@
+---
+title: "HW"
+author: "Brandon Keck"
+format: 
+  html:
+    self-contained: true
+---
+
+
+## Exercise 1
+```{r}
+sum_squares <- function(x) {
+  sum <- 0
+  
+  for (i in 1:x) {
+    sum <- sum + i^2
+  }
+  
+  return(sum)
+}
+
+sum_5 <- sum_squares(5)
+sum_10 <- sum_squares(10)
+sum_50 <- sum_squares(50)
+
+print(paste("The sum of squares up to 5 is", sum_5))
+print(paste("The sum of squares up to 10 is", sum_10))
+print(paste("The sum of squares up to 50 is", sum_50))      
+```
+
+
+## Exercise 2
+# (a)
+```{r}
+head(airquality)
+
+dframe1 <- c()
+
+for (i in 1:ncol(airquality)) {
+  
+  dframe1[i] <- sum(is.na(airquality[, i]))
+}
+
+names(dframe1) <- colnames(airquality)
+
+dframe1
+```
+
+
+# (b)
+```{r}
+dframe1 <- apply(airquality, MARGIN = 2, FUN = function(x) sum(is.na(x)))
+
+dframe1
+```
+
+
+## Exercise 3 
+```{r}
+set.seed(200)
+n <- 10000
+count_sevens <- 0
+
+for (i in 1:n) {
+  dice <- sample(1:6, size = 2, replace = TRUE) 
+  if (sum(dice) == 7) {
+    count_sevens <- count_sevens + 1 
+  }
+}
+
+count_sevens / n
+```
+
+
+## Exercise 4
+```{r}
+library(mosaicData)
+```
+
+
+## Wage Confidence Interval
+```{r}
+compute_ci <- function(b, cl = 0.95, na_rm = FALSE) {
+  if (na_rm) {
+    b <- na.omit(b)
+  }
+  
+  n <- length(b)
+  mean_b <- mean(b)
+  sd_b <- sd(b)
+  
+  
+  t_value <- abs(qt((1 - cl) / 2, df = n - 1)) #computes the critical value for a specified confidence level, cl, 
+  
+  me <- t_value * (sd_b / sqrt(n))
+  
+  lower <- mean_b - me
+  upper <- mean_b + me
+  
+  return(c(lower, upper))
+}
+
+
+compute_ci(CPS85$wage) # uses default cl = 0.95
+```
+## Wage Confidence Interval when cl = 0.8
+```{r}
+compute_ci(CPS85$wage, cl = 0.8)
+```
+
+
+## Ozone Confidence Interval
+```{r}
+compute_ci(airquality$Ozone, cl = 0.90, na_rm = TRUE) # Ozone column has NA values
+```
+

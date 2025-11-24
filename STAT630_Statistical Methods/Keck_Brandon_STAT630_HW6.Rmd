@@ -1,0 +1,405 @@
+---
+title: "HW 6"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, warning = FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gtsummary)
+library(gt)
+```
+
+
+
+## Part 0: Leterature Review
+https://www.ahajournals.org/doi/pdf/10.1161/HYPERTENSIONAHA.107.094011
+
+#### 1. 
+This article from the American Heart Association states that weight gain is associated with increases in systolic blood pressure, with each additional kilogram potentially raising blood pressure by 1-3 mm Hg. However, weight loss-even without dietary sodium adjustments can lead to measureable reductions in blood pressure.
+
+
+#### 2.
+Based upon the article that I read there appears to be an association between weight and blood pressure.As body weight increases, so too does systolic blood pressure.
+
+
+## Part 1: Data Cleaning
+#### 3.
+```{r}
+getwd()
+```
+
+
+```{r}
+# load in the dataset
+chsdata <- read.table("chsData.txt", header = TRUE)
+```
+
+#### (a)
+
+```{r}
+# Convert clinic to a factor
+chsdata$clinic <- factor(chsdata$clinic, 
+                          levels = c(1, 2, 3, 4), 
+                          labels = c("Sacramento", "Forsyth", "Washington", "Pittsburgh"))
+
+```
+
+
+
+```{r}
+# Convert season to a factor
+chsdata$season <- factor(chsdata$season,
+                         levels = c(1, 2, 3, 4),
+                         labels = c("summer", "fall", "winter", "spring"))
+```
+
+
+```{r}
+# Convert arth to a factor
+chsdata$arth <- factor(chsdata$arth,
+                         levels = c(0, 1),
+                         labels = c("none", "arthiritis"))
+```
+
+
+
+```{r}
+chsdata$diab <- factor(chsdata$diab,
+                         levels = c(1, 2, 3),
+                         labels = c("none", "borderline", "diabetes"))
+```
+
+
+
+```{r}
+# Convert income to a factor
+chsdata$income <- factor(chsdata$income,
+                         levels = c(1, 2, 3, 4, 5, 6, 7, 8),
+                         labels = c("<=5k", "5k-8k", "8k-12k", "12k-16k", "16k-24k", "24k-35k", "35k-50k", ">50k"))
+```
+
+
+```{r}
+chsdata$exint0 <- factor(chsdata$exint0, 
+                          levels = c(0, 1, 2, 3), 
+                          labels = c("no exercise", "low intensity", "moderate intensity", "high intensity"))
+```
+
+
+
+```{r}
+# use this as a check
+# head(chsdata)
+```
+
+
+
+#### (b)
+```{r}
+#Create sbp140 as a binary indicator
+chsdata$sbp140 <- ifelse(chsdata$sbp >= 140, 1, 0)
+```
+
+
+
+## Part 2: Exploratory Data Analysis
+#### (4)
+
+#### (a)
+
+```{r}
+missing_values <- chsdata %>% 
+  summarise(across(everything(), ~ sum(is.na(.)))) %>% 
+  pivot_longer(everything(), names_to = "Variable", values_to = "Number_Missing_Rows")
+
+missing_values %>% 
+  gt() %>% 
+  tab_header(title = "Missing Values by Variable") %>% 
+  cols_label(
+    Variable = "Variable",
+    Number_Missing_Rows = "Number of Missing Rows"
+  )
+```
+
+
+#### (b)
+Removing missing data without further data analysis could introduce bias. Especially if the missing values are not random. In order for us to make a well-informed decision, we need to investigate the patterns and potential reasons for missing data.
+
+
+#### remove any missing values
+```{r}
+chsdata_clean <- chsdata %>%
+  filter(if_all(c(weight, weight50, grade, arth, sbp, pkyrs, diab, income, exint0, block0, kcal0, sbp140), ~ !is.na(.)))
+```
+
+
+#### (5)
+
+```{r}
+chsdata_clean <- chsdata_clean %>% 
+  mutate(sbp140 = factor(sbp140, levels = c(0,1), labels = c("Low", "High")))
+
+ggplot(chsdata_clean, aes(x = sbp140, y = weight)) +
+  geom_boxplot(fill = "skyblue", color = "black") +
+  labs(
+    title = "Relationship between High Systolic Blood Pressure and Weight",
+    x = "High Systolic Blood Pressure",
+    y = "Weight"
+  ) +
+  theme_minimal()
+```
+
+
+
+#### 6
+One potential confounding variable is age. Age is often associated with high blood pressure levels. This is due to the fact that as people get older their arteries become more constricted and that increases blood pressure. 
+
+
+
+#### 7
+```{r}
+ggplot(chsdata_clean, aes(x = age, y = weight, color = sbp140)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Relationship between Weight, Age, and High Blood Pressure",
+    x = "Age",
+    y = "Weight",
+    color = "High Blood Pressure"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+## 8
+
+
+```{r}
+chsdata_clean <- chsdata_clean %>% 
+  mutate(gender = factor(gender, levels = c(0, 1), labels = c("Female", "Male")))
+```
+
+
+```{r}
+chsdata_clean %>%
+  select(gender, weight, diab, age, sbp140) %>%
+  tbl_summary(
+    by = sbp140,
+    digits = list(
+      all_continuous() ~ c(2, 2)
+    ),
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    )
+  )
+
+```
+
+
+
+## Part 3: Data Analysis
+
+#### (9)
+
+**1: Hypothesis**
+$$
+H_0: p = 0.5
+$$
+
+
+$$
+H_A: p \neq 0.5
+$$
+
+**2: Confidence Interval**
+```{r}
+n <- nrow(chsdata_clean) # Sample size
+phat<- nrow(chsdata_clean %>% filter(sbp140 == "High")) / n
+p0 <- 0.5
+
+se_null <- sqrt( (p0 * (1-p0) ) /n)
+z_stat <- (phat - p0) / se_null
+
+z_star <- qnorm(0.975)
+se_phat <- sqrt ( (phat * (1-phat) ) /n)
+
+
+phat + c(-1,1) * z_star * se_phat
+
+```
+
+**3:Conclusion:**
+
+We are 95% confident that the true proportion of individuals with high systolic blood pressure is between 35.52 and 39.71.
+
+#### (10)
+
+**1: Hypothesis:**
+Let $\mu_{high}$ be the mean weight of people with high SBP, and $\mu_{low}$ be the mean weight of people with low SBP.
+
+
+$$
+H_0:\mu_{high}=\mu_{low}
+$$
+
+
+$$
+H_A:\mu_{high} > \mu_{low}
+$$
+
+
+```{r}
+high_bp_weights <- chsdata_clean %>% 
+  filter(sbp140 == "High", !is.na(weight)) %>% 
+  select(weight) %>% 
+  pull()
+
+low_bp_weights <- chsdata_clean %>% 
+  filter(sbp140 == "Low", !is.na(weight)) %>% 
+  select(weight) %>% 
+  pull()
+
+# Calculate sample sizes for each group
+n1 <- length(high_bp_weights)
+n2 <- length(low_bp_weights)
+
+```
+
+
+
+### Calculate test statistic
+```{r}
+# Calculate means for each group
+xbar1 <- mean(high_bp_weights)
+xbar2 <- mean(low_bp_weights)
+
+# Calculate standard deviations for each group
+s1 <- sd(high_bp_weights)
+s2 <- sd(low_bp_weights)
+
+# Calculate the difference in sample means
+stat <- xbar1 - xbar2
+null_value <- 0
+
+# Calculate the standard error
+se <- sqrt(s1^2 / n1 + s2^2 / n2)
+
+# Degrees of freedom (using the smaller sample size minus 1)
+df <- min(c(n1, n2)) - 1
+
+# Calculate the t-statistic
+t_stat <- (stat - null_value) / se
+
+# Output the t-statistic
+t_stat
+
+```
+
+
+
+```{r}
+p_val <- pt(t_stat, df = df, lower.tail = FALSE)
+
+p_val
+```
+
+
+### Confirm Hypothesis test
+
+```{r}
+t.test(high_bp_weights, low_bp_weights, alternative = "greater")
+```
+
+
+**Conclusion:**
+With a p-value of 0.07752 which is greater than our significance value of $\alpha = 0.05$ we fail to reject $H_0$. We do not have enough evidence to conclude that the true mean weight of people with high systolic blood pressure is greater than the true mean weight of people with low systolic blood pressure.
+
+## 11
+```{r}
+chsdata_clean <- chsdata_clean %>%
+  mutate(weight_grp = case_when(
+    weight < 135 ~ "< 135 lbs",
+    weight >= 135 & weight <= 160 ~ "135-160 lbs",
+    TRUE ~ "> 160 lbs"
+  )) %>%
+  mutate(weight_grp = factor(weight_grp))
+```
+
+
+
+### (1) Hypthesis 
+$H_0:$Weight group and sbp are independent of one another.
+
+
+$H_A:$ Weight group and sbp are not independent.
+
+**Test conditions:**
+1. Independence: People's weight and blood pressure are indpendent of one another. Someone's weight and blood pressure doesn't affect the other.
+2. Expected Counts:
+```{r}
+sbp_weight <- addmargins(table(chsdata_clean$sbp140, chsdata_clean$weight_grp))
+
+sbp_weight
+
+519 * 1287 / 2063
+906 * 1287 / 2063
+638 * 1287 / 2063
+
+519 * 776 / 2063
+906 * 776 / 2063
+638 * 776 / 2063
+
+
+```
+
+Our expected counts are all greater than 5 so the conditions have been satisfied. We can also assume that one persons weight does not effect the weight of another person.
+
+
+
+**Calculate test statistic:**
+
+#### Chi-square test of independence
+```{r}
+test <- chisq.test(table(chsdata_clean$sbp140, chsdata_clean$weight_grp))
+cat("Expected counts:", test$expected)
+
+test
+
+```
+**p-value**
+We calculated our $\chi^2$ statistic to be 2.2339 and we observe that our p-value is 0.3273.
+
+
+#### (5) 
+Decision: Since the p-value is 0.3273  which is greater than our significance value of $\alpha = 0.05$ we fail to reject the $H_0:$.
+
+**Conclusion:** We do not have enough evidence that there is an association between systolic blood pressure and weight group. Therefore, we do not have enough evidence that they are not independent.
+
+
+## 12
+In question 2, I hypothesized that there is an association between between weight and systolic blood pressure, with the expectation that as body weight increases, so does systolic blood pressure.
+
+However, from the chi-squared test performed yielded a p-value of 0.3273 which is well above the significance level of 0.05. This means we fail to reject the null hypothesis, indicating that there is insufficient evidence of a statistically significant association between weight group and systolic blood pressure. Therefore, we do not have enough evidence to confirm the hypothesized relationship between weight and systolic blood pressure.
+
+
+
+
+
+
+
+
+

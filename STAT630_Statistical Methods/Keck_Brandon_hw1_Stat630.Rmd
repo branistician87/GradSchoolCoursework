@@ -1,0 +1,161 @@
+---
+title: 'STAT 630: Homework 1'
+author: 'Brandon Keck '
+date: 'Due: September 6th, 2024 at 11:59pm'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+1. Listen to the following episode of [Stats + Stories](https://statsandstories.net/society1/getting-better-data-on-where-we-live).
+
+a) What is the sampling unit in the American Housing Survey? 
+~Housing Unit
+
+b) What does HUD stand for?  
+~Housing and Urban Development
+
+c) How does the Census Bureau try to reduce respondent burden?
+~The Census Bureau reduced respondent burden by steamlining their surveys. They have accomplished this by avoiding asking redudent questions that could be linked to responses with administrative data. They have also included incentives and follow-up strategies to encourage participation without respondents feeling overwhelmed.
+
+d) Describe the sampling process in a few sentences _in your own words_.  
+~The American Housing Survey works with the U.S. Census Bureau and uses their Master File. This master file contains a comprehensive list of housing units. A sample which represents approximately 100,000 housing units is then selected. This sample over samples larger metropolitan areas such as L.A. but it also captures smaller areas such as Richmond Virginia to ensure national and regional representatives. 
+
+e) What would you like to know about? Write a research question that could be answered with the American Housing Survey.  
+I would like to know what the housing market trend has been over the years. I would like to see if we could predict the future cost of homes will be in the next 10, 20, and 30 years and to see how many homes would need to be built in order to keep housing more affordable within the US. 
+    
+2. Install the `openintro` package, by uncommenting the following code. 
+
+*Reminder: you only have to do this once- like installing an app on your phone. After you run this line of code, either **comment** it out using `#`, or just delete it.*
+
+```{r}
+#install.packages("openintro")
+```
+
+After installing the R package from our book, load it, i.e., open the app!
+
+```{r}
+library(openintro) # Load the openintro package
+require(tidyverse) # Load the tidyverse suite of packages
+```
+
+Load in the `babies` dataset. Use the help file to learn more.
+
+```{r}
+data(babies) # Load the data
+
+# Uncomment the line below to view the help file. 
+# ?babies # Make sure to comment back before knitting
+```
+
+View a summary of the dataset. Note: in all future assignments do NOT print the output from `glimpse()` or `summary()`. If you are going to provide summary statistics, they should appear in a neatly organized table. 
+
+```{r}
+glimpse(babies) # Glimpse the dataset
+summary(babies) # View a summary of each column (variable)
+```
+
+a) What does each row in the data frame represent, i.e., what is the observational unit?  
+~The observational unit of interest is each individual baby.This includes attributes that both relate to the baby and their mother. Each row of data contains information specific to each individual baby including; birth weight, gestation time, height and weight of the mother etc. 
+
+b) How many participants were in the study? 
+~1,236 participants were in the study.
+
+c) All variables are coded as integers. Which variables should be recoded as *factors*? Recode these variables in the code chunk below. (Optional: do this with a single line of code.) 
+~The two variables that should be coded as factors are parity, and smoke. These are both categorical variables with two levels of 0 and 1.
+
+    
+```{r}
+babies$parity <- factor(babies$parity, levels = c(0, 1), labels = c("No", "Yes"))
+babies$smoke <- factor(babies$smoke, levels = c(0, 1), labels = c("Non-Smoker", "Smoker"))
+glimpse(babies) # Glimpse the dataset
+summary(babies) # View a summary of each column (variable)
+```
+
+d) Create a plot using base R or the tidyverse to visualize one categorical variable of your choice in the code chunk below. *Make sure to add a title and relabel the x and y axes.* 
+    
+```{r}
+library(ggplot2)
+
+ggplot(babies, aes(x = smoke, fill = smoke)) +
+  geom_bar() +
+  scale_fill_manual(values = c("Non-Smoker" = "royalblue", "Smoker" = "gold")) +
+  labs(title = "Distribution of Smoking Status",
+       x = "Smoking Status",
+       y = "Number of Mothers") +
+  theme_minimal()
+```
+
+e) Create a plot using base R or the tidyverse to visualize one quantitative variable of your choice in the code chunk below. *Make sure to add a title and relabel the x and y axes.* 
+    
+```{r}
+library(ggplot2)
+
+#histogram
+ggplot(babies, aes(x = bwt)) +
+  geom_histogram(binwidth =  5, fill = "blue", color = "black") +
+  labs(title = "Distribution of Birth Weight",
+       x = "Birth Weight (grams)",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+f) What did you learn from the plot of the quantitative variable in part (e) above that you did not learn from the `summary()`? Explain.  
+~ This histogram of the distribution of birth weight shows a bell-shaped curve which indicates a normal distribution.
+
+    
+g) Manually fill in the table below (Optional: use code to generate your own table). Round to 2 decimal places. Show any code you used in the R chunk below as well. 
+
+```{r}
+mean_age <- mean(babies$age, na.rm = TRUE)
+sd_age <- sd(babies$age, na.rm = TRUE)
+
+# Parity table
+props1 <- prop.table(table(babies$parity))
+addmargins(table(babies$parity))
+
+
+
+mean_ges <- mean(babies$gestation, na.rm = TRUE)
+sd_ges <- sd(babies$gestation, na.rm = TRUE)
+
+mean_bwt <- mean(babies$bwt)
+sd_bwt <- sd(babies$bwt)
+
+mean_weight <- mean(babies$weight, na.rm = TRUE)
+sd_weight <- sd(babies$weight, na.rm = TRUE)
+
+# Smoking table
+props2 <- prop.table(table(babies$smoke))
+addmargins(table(babies$smoke))
+```
+
+    
+| Variable | mean (sd) or n(%) |
+|--------|-----------------------|
+| Mother's Age | `r round( mean_age, 2)` (`r round(sd_age, 2)`) |
+| Parity | |
+| - 0 | 921 (`r round(props1[1]*100, 2)`%) |
+| - 1 | 315 (`r round(props1[2]*100, 2)`%) |
+| Gestation |`r round(mean_ges, 2)` (`r round(sd_ges, 2)`)  |
+| Birth weight (oz) |`r round(mean_bwt, 2)` (`r round(sd_bwt, 2)`)    |
+| Mother's weight (lbs)|`r round(mean_weight, 2)` (`r round(sd_weight, 2)`)      |
+| Smoker Status | |
+| - Non-Smoker | 742 (`r round(props2[1]*100, 2)`%) |
+| - Smoker | 484 (`r round(props2[2]*100, 2)`%) |
+
+
+In the space provided, please write your answers to the following:
+
+1) Was there anything you found difficult with this homework? What topics (if any) do you feel you still need more work on?
+~ The part that I found to be particularly difficult with this homework was the re-coding of the parity and smoker status variables to factor variables. It took me a while to understand that running the same code multiple times would make R confused. Sometimes I would run the code and the factors would become 0s and 1s respectfully. Then if I ran it again, it would become NA's which is not what I wanted them to be. In fact, it was going to Dr. Moore's office hours that helped alleviate that issue. The other part that I had difficulty with was manually filling in the table. I had initially attempted to create my own table but that was too much for me to take on. 
+
+
+
+2) Give yourself a rating for this assignment using the EMRN rubric.
+~ I feel that I earned an E for Excellent on this assignment. I spent many hours combing over my code and the questions to ensure the accuracy of my code and the understanding of each question. I also went to office hours to ensure my understanding of the topics that I was unsure of. Dr. Moore had even said that my code and theirs was identical. I feel that I have completed the assignment with all questions being answered to their entirety and with great accuracy. The only thing I believe that should make this an M would be because I didn't use code to generate my own table.
+

@@ -1,0 +1,1153 @@
+---
+title: "HW7"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+# Section 4.3
+### 4.4-1
+#### (b)
+$$
+f(x,y) = \frac{x+y}{32}, \ x=1,2 \ and \ y= 1,2,3,4
+$$
+
+
+Find g(x|y)
+$$
+g(x|y) = \frac{f(x,y)}{f_y(y)} , f_y(y) > 0
+$$
+
+For y = 1
+$$
+g(1|1) = \frac{f(1,1)}{f_Y(1)} = \frac{\frac{2}{32}}{\frac{5}{32}} = \frac{2}{5}
+$$
+
+
+
+$$
+g(1|2) = \frac{f(1,2)}{f_Y(2)} = \frac{\frac{3}{32}}{\frac{7}{32}} = \frac{3}{7}
+$$
+
+
+
+$$
+g(1|3) = \frac{f(1,3)}{f_Y(3)} = \frac{\frac{4}{32}}{\frac{9}{32}} = \frac{4}{9}
+$$
+
+
+$$
+g(1|4) = \frac{f(1,4)}{f_Y(4)}= \frac{\frac{5}{32}}{\frac{11}{32}} = \frac{5}{11}
+$$
+
+
+$$
+g(2|1) = \frac{f(2,1)}{f_Y(1)} = \frac{\frac{3}{32}}{\frac{5}{32}} = \frac{3}{5}
+$$
+
+
+
+$$
+g(2|2) = \frac{f(2,2)}{f_Y(2)} = \frac{\frac{4}{32}}{\frac{7}{32}} = \frac{4}{7}
+$$
+
+
+$$
+g(2|3) = \frac{f(2,3)}{f_Y(3)} = \frac{\frac{5}{32}}{\frac{9}{32}} = \frac{5}{9}
+$$
+
+
+$$
+g(2|4) = \frac{f(2,4)}{f_Y(4)} = \frac{\frac{6}{32}}{\frac{11}{32}} = \frac{6}{11}
+$$
+
+
+
+#### (c)
+$$
+h(y|x) = \frac{f(x,y)}{f_X(x)}
+$$
+
+
+$$
+h(1|1) = \frac{f(1,1)}{f_X(1)} = \frac{\frac{2}{32}}{\frac{14}{32}} = \frac{2}{14}
+$$
+
+
+$$
+h(1|2) = \frac{f(1,2)}{f_X(1)} = \frac{\frac{3}{32}}{\frac{14}{32}} = \frac{3}{14}
+$$
+
+
+$$
+h(1|3) = \frac{f(1,3)}{f_X(1)} = \frac{\frac{4}{32}}{\frac{14}{32}} = \frac{4}{14}
+$$
+
+
+$$
+h(1|4) = \frac{f(1,4)}{f_X(1)} = \frac{\frac{5}{32}}{\frac{14}{32}} = \frac{5}{14}
+$$
+
+
+$$
+h(1|2) = \frac{f(1,2)}{f_X(2)} = \frac{\frac{3}{32}}{\frac{18}{32}} = \frac{3}{18}
+$$
+
+
+$$
+h(2|2) = \frac{f(2,2)}{f_X(2)} = \frac{\frac{4}{32}}{\frac{18}{32}} = \frac{4}{18}
+$$
+
+
+$$
+h(2|3) = \frac{f(2,3)}{f_X(2)} = \frac{\frac{5}{32}}{\frac{18}{32}} = \frac{5}{18}
+$$
+
+
+$$
+h(2|4) = \frac{f(2,4)}{f_X(2)} = \frac{\frac{6}{32}}{\frac{18}{32}} = \frac{6}{18}
+$$
+
+
+#### (d)
+
+$$
+P(A \ or \ B) = P(A)+P(B)
+$$
+
+
+$$
+P(1 \le Y \le 3 | X =1) = h(1|1) + h(2|1) + h(3|1)
+$$
+
+
+$$
+= \frac{2+3+4}{14} = \frac{9}{14}
+$$
+
+
+$$
+P(Y \le 2 | X = 2) = h(1|2) + h(2|2)
+$$
+
+
+$$
+\frac{3+4}{18} = \frac{7}{18}
+$$
+
+
+$$
+P(X=2|Y=3) = g(2|3)
+$$
+
+
+$$
+\frac{5}{9}
+$$
+
+
+
+#### (e)
+
+$Find \ E(Y|X=1) \ and \ Var(Y|X=1)$
+
+$$
+E(Y|X=1) = \sum y * h(y|1)
+$$
+
+
+```{r}
+1 * ( 2/14) + 2 * (3/14) + 3 * (4/14) + 4 * (5/14)
+```
+
+$$
+\boxed{E(Y|X=1) = 2.857143}
+$$
+
+$$
+V(Y|X=1) = \sum (y -E(Y|X=1))^2 * h(y|1)
+$$
+
+```{r}
+(1 - 20/7)^2 * 2/14 + (2-20/7)^2 * 3/14 + (3 - 20/7)^2 * 4/14+(4-20/7)^2 * 5/14
+```
+
+
+$$
+\boxed{Var(Y|X=1)=1.122449}
+$$
+
+
+### 4.3-4
+$$
+(R,R): Red \ eyes 
+$$
+
+$$
+(R,W): Red \ eyes
+$$
+
+
+$$
+(W,R): Red \ eyes
+$$
+
+
+$$
+(W,W): White \ eyes
+$$
+
+
+$$
+P(Red \ eyes) = P(R,R) \ or \ (R,W) \ or \ (W,R)
+$$
+
+
+$$
+P(Red \ eyes) = \frac{3}{4}
+$$
+
+
+$$
+X \sim Binomial(n=400, p = \frac{3}{4})
+$$
+
+
+#### (b)
+$$
+Expected \ Value = n*p
+$$
+
+
+$$
+n = 400, p =0.75
+$$
+
+
+```{r}
+n <- 400
+p = 0.75
+
+n*p
+```
+
+
+$$
+\boxed{E(X) = 300}
+$$
+
+
+$$
+Var(X) = n*p(1-p)
+$$
+
+
+
+```{r}
+n <- 400
+p <- 0.75
+
+n*p*(1-p)
+```
+
+
+$$
+\boxed{Var(X)=75}
+$$
+
+
+#### (c) Given that X = 300, how is Y distributed? 
+
+$$
+(R,R): Homozygous \ Red
+$$
+
+
+$$
+(R,W): Heterozygous \ Red
+$$
+
+
+$$
+(W,R):Heterozygous \ Red
+$$
+
+
+$$
+P(Heterozygous|Red \ eyes) = \frac{2}{3}
+$$
+
+
+$$
+\boxed{Y|X = 300 \sim Binomial(300, \frac{2}{3})}
+$$
+
+
+### (d) Give the values of E(Y | X = 300) and Var(Y | X =  300). 
+
+```{r}
+n <- 300
+p <- 2/3
+
+n * p
+n*p*(1-p)
+
+```
+
+
+$$
+\boxed{E(Y|X=300) = 200} \ \boxed{Var(Y|X=300) = 66.66667}
+$$
+
+
+## 4.3-6
+
+P(X=500)
+
+```{r}
+0.10 + 0.20+0.10
+```
+
+
+$$
+\boxed{P(X=500) = 0.4}
+$$
+
+P(Y=500)
+```{r}
+0.10+0.20+0.05
+```
+
+
+$$
+\boxed{P(Y=500) = 0.35}
+$$
+
+
+P(Y = 500 | X = 500), 
+
+
+$$
+= \frac{P(X=500, Y=500)}{P(X=500)}
+$$
+
+```{r}
+(0.20)/(0.4)
+```
+
+
+$$
+\boxed{P(Y = 500 | X = 500)=0.5}
+$$
+
+
+P(Y = 100 | X = 500). 
+
+$$
+= \frac{P(X=500, Y = 100)}{P(X=500)}
+$$
+
+```{r}
+0.1/0.4
+```
+
+
+$$
+\boxed{P(Y=100 | X = 500) = 0.25}
+$$
+
+#### (b)
+
+$$
+\mu_X = \sum x * P(X=x)
+$$
+
+```{r}
+100 * 0.35 + 500 * 0.4 + 1000 * 0.25
+```
+
+
+$$
+\boxed{\mu_X = 485}
+$$
+
+
+
+$$
+\mu_Y = \sum y * P(Y=y)
+$$
+
+
+```{r}
+1000 * 0.3 + +500 * 0.35 + 100 * 0.35
+```
+
+$$
+\boxed{\mu_Y = 510}
+$$
+
+
+$$
+\sigma^2_X = \sum(x - \mu_X)^2 * P(X=x)
+$$
+
+
+```{r}
+((100-485)^2 * 0.35) + ((500-485)^2 * 0.4) + ((1000-485)^2 * 0.25)
+
+```
+
+
+$$
+\boxed{\sigma^2_X = 118275}
+$$
+
+
+
+$$
+\sigma^2_Y = \sum(y - \mu_Y)^2 * P(Y=y)
+$$
+
+
+```{r}
+(1000 - 510)^2 * 0.30 + (500-510)^2 * 0.35 + (100-510)^2 * 0.35 
+```
+
+
+$$
+\boxed{\sigma^2_Y = 130900}
+$$
+
+
+#### (c) Compute the conditional means E(X | Y = 100), E(Y | X = 500). 
+
+
+$$
+E(X | Y = 100) = \sum_x x * P(X=x| Y=100)
+$$
+
+
+$$
+\frac{1}{P(Y=100)} * \sum_x x*P(X=x|Y=100)
+$$
+
+
+```{r}
+1/0.35 * (0.2 * 100 + 0.1 * 500 + 0.05 * 1000)
+```
+
+
+$$
+\boxed{E(X | Y = 100) = 342.8571}
+$$
+
+E(Y | X = 500). 
+
+
+$$
+E(Y | X = 500) = \sum _y y * P(Y=y | X = 500)
+$$
+
+
+$$
+\frac{1}{P(X=500)} * \sum_y y*P(Y=y|X=500)
+$$
+
+```{r}
+1/0.4 * (1000 * 0.1 + 500 * 0.2 + 100 * 0.1)
+```
+
+
+$$
+\boxed{E(Y | X = 500) = 525}
+$$
+
+
+#### (d) Compute Cov(X, Y). 
+
+$$
+Cov(X,Y) = E(X,Y) - \mu_X * \mu_Y
+$$
+
+
+$$
+E(XY) = \sum x* y * P(X=x | Y=y)
+$$
+
+
+
+```{r}
+(100 * 100 * 0.2) + (100 * 500 * 0.1) + (100 * 1000 * 0.05) + (500 * 100 * 0.1) + (500 * 500 * 0.2) + (500 * 1000 * 0.05) + (1000 * 100 * 0.05) + (1000 * 500 * 0.1) + (1000 * 1000 * 0.15)
+```
+
+
+
+$$
+Cov(X,Y) = E(XY) - E(X)E(Y)
+$$
+
+
+```{r}
+297000 - (510 * 485)
+```
+
+$$
+\boxed{Cov(X,Y) = 49650}
+$$
+
+
+#### (e) Compute the correlation coefficient ρ = Cov(X,  Y)/σX σY. 
+
+$$
+\rho = \frac{Cov(X,Y)}{\sigma_X * \sigma_Y}
+$$
+
+
+```{r}
+49650/(sqrt(118275)*sqrt(130900))
+```
+
+$$
+\boxed{\rho = 0.3990276}
+$$
+
+
+# Section 4.4
+## 4.4-16
+
+
+$$
+E(X) = \frac{1}{3}
+$$
+
+
+$$
+E(Y) = \frac{2}{3}
+$$
+
+
+$$
+E(Y^2) = \frac{1}{2}
+$$
+
+
+$$
+pdf \ of \ f(x,y) = 2
+$$
+
+
+$$
+E(X^2) = \int_0^1 \int_x^1 x^2 * 2dy * dx
+$$
+
+$$
+= \int_0^1 2x^2 *[y]_x^1 dx
+$$
+
+$$
+= \int_0^1 2x^2 * (1-x)dx
+$$
+
+
+$$
+\int_0^1 2x^2-2x^3 dx
+$$
+
+
+$$
+2(\frac{x^3}{3} - \frac{x^4}{4})]_0^1
+$$
+
+
+$$
+2(\frac{1}{3} - \frac{1}{4})
+$$
+
+
+$$
+=\frac{1}{6}
+$$
+
+
+Var(X)=
+```{r}
+1/6 -(1/3)^2
+```
+
+
+Var(Y)=
+```{r}
+1/2 - (2/3)^2
+```
+
+
+$$
+E(XY) = \int_0^1 \int_x^1 xy2dydx
+$$
+
+
+$$
+= \int_0^1 2x[\frac{y^2}{2}]_x^1 \ dx
+$$
+
+
+$$
+= \int_0^1 x * (y^2)_0^1 \ dx
+$$
+
+
+$$
+= \int_0^1 x (1-x^2) dx
+$$
+
+
+$$
+= \int_0^1 x - x^3 dx
+$$
+
+$$
+= \frac{x^2}{2} - \frac{2^4}{4}]_0^1
+$$
+
+
+$$
+=\frac{1}{2} - \frac{1}{4}
+$$
+
+
+$$
+= \frac{1}{4}
+$$
+
+
+
+Cov(X,Y)=
+```{r}
+(1/4-(1/3*2/3))
+```
+
+
+$\rho=$
+```{r}
+0.02777778 / sqrt(0.05555556 * 0.05555556)
+```
+
+
+$\boxed{\rho = 0.5}$
+
+
+#### 4.4-19 Let X have a uniform distribution U(0, 2), and let  the conditional
+
+$$
+U \sim (0,1) = \frac{1}{b-a} , \ a \le 0 \le b
+$$
+
+
+
+$$
+f_X(X) = \frac{1}{2-0} = \frac{1}{2}, \ 0 \le x \le 2
+$$
+
+
+$$
+f_{Y|X}(y|x) = \frac{1}{x^2} , \ 0 \le y \le x^2
+$$
+
+
+$$
+f(x,y) = f_X(x) * f_{Y|X}(y|x)
+$$
+
+
+$$
+= \frac{1}{2} * \frac{1}{x^2} = \frac{1}{2x^2}, \ 0 \le x \le 2, \ 0 \le y \le x^2
+$$
+
+
+$$
+Joint \ pdf \ of X \ and \ Y:\boxed{f(x,y) = \frac{1}{2x^2},  \ 0 \le x \le 2, \ 0 \le y \le x^2}
+$$
+
+
+#### (b)
+
+$$
+f_Y(y) = \int_{\sqrt{y}}^2 f(x,y) dx
+$$
+
+
+$$
+f_Y(y) = \int_{\sqrt{y}}^2 \frac{1}{2x^2} dx
+$$
+
+
+$$
+= \frac{1}{2} * \int_{\sqrt{y}}^2 x^2 dx
+$$
+
+
+$$
+\frac{1}{2} * [-\frac{1}{x}]_{\sqrt{y}}^2
+$$
+
+
+$$
+=\frac{1}{2}(-\frac{1}{2}+\frac{1}{\sqrt{y}})
+$$
+
+
+$$
+\boxed{= -\frac{1}{4} + \frac{1}{2\sqrt{y}}, \ 0 \le y \le 4}
+$$
+
+
+#### (c) Compute E(X | y), the conditional mean of X, given  that Y = y. 
+
+$$
+E(X|Y=y) = \int_{\sqrt{y}}^2 x *f_{X|Y}(x|y) dx
+$$
+
+Conditional pdf 
+$$
+f_{(X|Y)}= \frac{f(x,y)}{f_Y(y)}
+$$
+
+
+$$
+f(x,y) = \frac{1}{2x^2}, \ 0 \le x \le 2, \ and \ 0 \le y \le x^2
+$$
+
+
+$$
+f_Y(y)= \frac{1}{2\sqrt{y}}-\frac{1}{4} , \ 0 \le y \le 4
+$$
+
+
+$$
+f_{X|Y}(x|y) = \frac{\frac{1}{2x^2}}{\frac{1}{2\sqrt{y}}-\frac{1}{4}}
+$$
+
+
+$$
+= \frac{1}{x^2(\frac{1}{\sqrt{y}}-\frac{1}{2})} , \ \sqrt{y} \le x \le 2
+$$
+
+
+$$
+E(X|Y=y) = \int_{\sqrt{y}}^2 x * f_{X|Y}(x|y)dx
+$$
+
+
+$$
+= \int_{\sqrt{y}}^2x * \frac{1}{x^2(\frac{1}{\sqrt{y}}-\frac{1}{2})}dx
+$$
+
+
+$$
+= \int_{\sqrt{y}}^2 \frac{1}{x(\frac{1}{\sqrt{y}}-\frac{1}{2})}dx
+$$
+
+
+$$
+=\frac{1}{\frac{1}{\sqrt{y}}-\frac{1}{2}} \int_{\sqrt{y}}^2 \frac{1}{x}dx
+$$
+
+
+$$
+= \frac{1}{\frac{1}{\sqrt{y}}-\frac{1}{2}} [lnx]_{\sqrt{y}}^2
+$$
+
+
+$$
+= \frac{1}{\sqrt{y}-\frac{1}{2}}(ln2-ln\sqrt{y})
+$$
+
+
+$$
+= \frac{1}{\sqrt{y}- \frac{1}{2}}(ln2-\frac{1}{2}lny)
+$$
+
+
+$$
+E(X|Y=y) = \frac{ln2-\frac{1}{2}lny}{\frac{1}{\sqrt{y}}-\frac{1}{2}}
+$$
+
+
+#### (d) Find E(Y | x), the conditional mean of Y, given that  X = x. 
+
+
+
+Since we are given that the conditional distribution of Y, given X=x is Y|X =x ~ U(0,x^2) we know that Y given X=x is uniformaly distributed over the interval [0,x^2]
+$$
+\boxed{E(Y|X=x) = \frac{0+x^2}{2} = \frac{x^2}{2}}
+$$
+
+
+## Section 4.5
+### 4.5-1. Let X and Y have a bivariate normal distribution  with parameters μX = −3, μY = 10, σ2 X = 25, σ2 Y = 9, and  ρ = 3/5. Compute  
+
+#### (a) P(−5 < X < 5). 
+
+$$
+P(x < X < y) = P(\frac{x-\mu_x}{\sigma_x} < \frac{X-\mu_x}{\sigma_x} < \frac{y-\mu_x}{\sigma_x})
+$$
+
+
+$$
+=P(\frac{-5+3}{5} < \frac{X + 3}{5} < \frac{5+3}{5})
+$$
+
+
+$$
+=\phi(1.6)-\phi(-0.4) = \boxed{0.6006}
+$$
+
+
+$$
+E(X|Y) = \mu_x + \rho * \frac{\sigma_x}{\sigma_y} * (Y-\mu_y)
+$$
+
+
+```{r}
+-3 + 3/5 * 5/3 * (13-10)
+```
+
+
+$$
+\boxed{E(X|Y) =0}
+$$
+
+
+$$
+\sigma_{x|y} = \sigma_x * \sqrt{1-(\rho)^2}
+$$
+
+```{r}
+5  * sqrt(1-(3/5)^2)
+```
+
+
+$$
+\boxed{\sigma_{x|y}=4}
+$$
+
+$$
+P(x < X <y|Y=13) = P(\frac{x-E(X|Y)}{\sigma_{x|y}} < \frac{X-E(X|Y)}{\sigma_{x|y}} < \frac{y-E(X|Y)}{\sigma_{x|y}})
+$$
+
+
+$$
+=P(\frac{-5-0}{4} < \frac{X-0}{4} < \frac{5-0}{4})
+$$
+
+
+
+$$
+=P(\frac{-5-0}{4} < \frac{X-0}{4} < \frac{5-0}{4})
+$$
+
+
+$$
+=P(-1.25 < \frac{X-0}{4} < 1.25)
+$$
+
+
+$$
+\phi(1.25)-\phi(-1.25)
+$$
+
+
+```{r}
+0.8944 - 0.1056
+```
+
+
+$$
+\boxed{P(-5 < X < 5|Y=13) = 0.7888}
+$$
+
+#### (c) P(7 < Y < 16). 
+
+$$
+P(x < Y < y) = P(\frac{x-\mu_y}{\sigma_y} < \frac{Y-\mu_y}{\sigma_y} < \frac{y-\mu_y}{\sigma_y})
+$$
+
+
+$$
+=P(\frac{7-10}{3} < \frac{Y-10}{3} < \frac{16-10}{3})
+$$
+
+
+$$
+=P(-1 < \frac{Y-10}{3} < 2)
+$$
+
+
+$$
+=\phi(2)-\phi(-1)
+$$
+
+
+```{r}
+0.97725-0.15866
+```
+
+$$
+\boxed{P(x < Y < y) = 0.81859}
+$$
+
+
+#### (d) P(7 < Y < 16 | X = 2). 
+
+$$
+E(Y|X) = \mu_y + \rho * \frac{\sigma_y}{\sigma_x} * (X-\mu_x)
+$$
+
+
+```{r}
+10 + 3/5 * 3/5 * (2+3)
+```
+
+
+
+$$
+\sigma_{y|x} = \sigma_y * \sqrt{1-(\rho)^2}
+$$
+
+
+```{r}
+3 * sqrt(1-(3/5)^2)
+```
+
+
+
+$$
+P(x < Y <y|X=2) = P(\frac{x-E(y|x)}{\sigma_{y|x}} < \frac{Y-E(Y|X)}{\sigma_{y|x}} < \frac{y-E(Y|X)}{\sigma_{y|x}})
+$$
+
+$$
+=P(\frac{7-11.8}{2.4} < \frac{Y-11.8}{2.4} < \frac{16-11.8}{2.4})
+$$
+
+
+$$
+=P(-2 < \frac{Y-11.8}{2.4} < 1.75)
+$$
+
+$$
+= \phi(1.75) - \phi(-2)
+$$
+
+
+
+```{r}
+0.95994- 0.02275
+```
+
+
+$$
+=\boxed{P(x < Y <y|X=2) = 0.93719}
+$$
+
+
+
+## 4.5-5
+$$
+E(Y|X=x) = \mu_Y + \rho \frac{\sigma_Y}{\sigma_X}(x-\mu_X)
+$$
+
+
+
+$$
+E(Y|X=190) = \mu_Y+ \rho \frac{\sigma_Y}{\sigma_X}(190-\mu_X)
+$$
+
+
+
+```{r}
+84 + 3/5 * 8/10 * (190-185)
+```
+
+
+
+$$
+\sigma_{Y|X} = \sigma_y * \sqrt{1-(\rho)^2}
+$$
+
+```{r}
+8 * sqrt(1-(3/5)^2)
+```
+
+
+$$
+V(Y|X) = \sigma_y^2 * (1-(\rho)^2)
+$$
+
+
+```{r}
+64 * (1-(3/5)^2)
+```
+
+
+$$
+Therefore, \ \boxed{Y \sim N(86.4, 40.96)}
+$$
+
+
+#### (b)
+$$
+P(x <Y < y|X = 190) = P(\frac{x-E(Y|X)}{\sigma_{y|x}} < \frac{Y-E(Y|X)}{\sigma_{y|x}} < \frac{y-E(Y|X)}{\sigma_{y|x}})
+$$
+
+
+$$
+=P(\frac{86.4-86.4}{6.4} < \frac{Y-86.4}{6.4} < \frac{95.36}{6.4})
+$$
+
+
+$$
+=P(0 < \frac{Y-86.4}{6.4}< 1.4)
+$$
+
+
+$$
+=\phi(1.4)-\phi(0) = \boxed{0.4192}
+$$
+
+
+## 4.5-6
+#### (a)
+$$
+P(x<Y<y) = P(\frac{x-\mu_y}{\sigma_y}< \frac{Y-\mu_y}{\sigma_y}<\frac{y-\mu_y}{\sigma_y})
+$$
+
+
+$$
+=P(\frac{19.9-22.7}{3.5} < \frac{Y-22.7}{3.5} <\frac{26.9-22.7}{3.5})
+$$
+
+
+$$
+=P(-0.8<\frac{Y-22.7}{3.5}<1.2)
+$$
+
+
+$$
+=\phi(1.2)-\phi(-0.8)
+$$
+
+
+$$
+=0.88493-0.21186 = \boxed{0.6731}
+$$
+
+
+#### (b)
+$$
+E(Y|X) = \mu_y + \rho*\frac{\sigma_y}{\sigma_x}*(X-\mu_x)
+$$
+
+
+$$
+=22.7+(0.78) * \frac{3.5}{4.2} * (x-22.7)
+$$
+
+
+$$
+=22.7+0.65(x-22.7)
+$$
+
+
+$$
+\boxed{E(Y|X=x)=22.7+0.65(x-22.7)}
+$$
+
+
+#### (c)
+$$
+V(Y|X) = \sigma_y^2*(1-(\rho)^2)
+$$
+
+
+```{r}
+12.25*(1-(0.78)^2)
+```
+
+
+
+$$
+\boxed{V(Y|X)=4.7971}
+$$
+
+#### (d)
+$$
+E(Y|X) = \mu_y + \rho * \frac{\sigma_y}{\sigma_x}(X-\mu_x)
+$$
+
+
+
+```{r}
+22.7 + (0.78) * (3.5/4.2) * (23-22.7)
+```
+
+
+
+$$
+P(\frac{19.9-22.895}{2.1902} < \frac{Y-22.895}{2.1902} < \frac{26.9-22.895}{2.1902})
+$$
+
+
+
+$$
+=P(-1.37 < \frac{Y-22.895}{2.1902}<1.83)
+$$
+
+
+$$
+=\phi(1.83)-\phi(-1.37)
+$$
+
+$$
+0.9663-0.0857 = \boxed{0.8806}
+$$
+
+
+#### (e)
+$$
+E(Y|X) = \mu_y + \rho * \frac{\sigma_y}{\sigma_x} * (X-\mu_x)
+$$
+
+
+```{r}
+22.7+(0.78) * (3.5/4.2) * (25-22.7)
+```
+
+
+
+$$
+P(\frac{19.9-24.195}{2.1902} < \frac{Y-24.195}{2.1902} < \frac{26.9-24.195}{2.1902})
+$$
+
+
+
+$$
+=P(-1.96 < \frac{Y-24.194}{2.1902}<1.23)
+$$
+
+
+$$
+=\phi(1.23)-\phi(-1.96)
+$$
+
+
+$$
+0.8914-0.0249 = \boxed{0.8665}
+$$

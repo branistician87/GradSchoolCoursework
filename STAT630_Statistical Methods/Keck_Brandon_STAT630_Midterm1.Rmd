@@ -1,0 +1,126 @@
+---
+title: "Midterm 1_Stat630"
+author: "Brandon Keck"
+date: "`r Sys.Date()`"
+output: 
+  html_document: default
+  latex_engine: xelatex
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+### (1)
+```{r, echo = FALSE, message = FALSE}
+library(readr)
+salary <- read_csv(here::here("data/salary.csv"))
+```
+
+
+
+
+
+### (2)
+```{r}
+
+```
+
+
+
+
+### (3)
+```{r}
+
+```
+
+
+
+
+
+### (4)
+```{r}
+
+```
+
+
+
+
+
+### (5)
+```{r}
+
+```
+
+
+
+
+### (6)
+```{r}
+
+```
+
+
+
+
+### (7)
+```{r}
+
+```
+
+
+
+
+### (8)
+```{r}
+
+```
+
+
+
+
+
+### (9)
+```{r}
+
+```
+
+
+
+
+### (10)
+```{r}
+
+```
+
+
+
+
+### (11)
+```{r}
+
+```
+
+
+
+### (a)
+```{r}
+
+```
+
+
+
+### (b)
+```{r}
+
+```
+
+
+
+
+

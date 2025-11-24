@@ -1,0 +1,186 @@
+---
+title: "HW"
+author: "Brandon Keck"
+format: 
+  html:
+    self-contained: true
+---
+# Exercise 1
+(a) logical, double, integer and character
+
+(b) While matrices are similar to data frames, matrices are more limited because they can only contain data of the same type.
+
+(c) The function 'as.integer()' converts the logical argument of True or False to integer values of 1 and 0.
+
+(d) It depends on the input of the columns. Typically the 'as.matrix()' function will retrieve information from the data frame and provide us with characters.
+
+# Exercise 2
+```{r}
+a <- c(1, 2, 3, 4, 5)
+a
+typeof(a)
+```
+a: creates a numeric vector and it's type is "double".
+
+```{r}
+b <- 1:5
+b
+typeof(b)
+```
+
+b: creates an integer sequence so it's type is "integer". 
+
+```{r}
+c <- c(sqrt(2), 4.7e4, 1/0)
+c
+typeof(c)
+```
+
+c: Combines numeric values and it's type is "double". 
+
+```{r}
+d <- c(T, T, T, T)
+d
+typeof(d)
+```
+
+d: Creates "logical". 
+
+```{r}
+e <- c("1", 2, 3)
+e
+typeof(e)
+```
+
+e: Creates "character"
+
+```{r}
+f <- c(7L, NA, NA, 5L, 3L)
+f
+typeof(f)
+```
+
+f: Creates "integer".  
+
+```{r}
+g <- c(7L, "NA", "NA", 5L, 3L)
+g
+typeof(g)
+```
+
+g: creates "character". 
+
+```{r}
+h <- c()
+h
+typeof(h)
+```
+
+h: Creates a "NULL" vector
+
+# Exercise 3
+```{r}
+head(airquality)
+Ozone1 <- airquality$Ozone
+is.na(Ozone1)
+Ozone2 <- na.omit(Ozone1)
+na_removed <- sum(is.na(Ozone1))
+Ozone2
+na_removed
+```
+
+(b) There were 37 NA's removed
+
+```{r}
+summary(Ozone2)
+sd(Ozone2)
+```
+(c) The min is 1.00, the median is 31.50, the mean is 42.13, the max is 168.00 and the standard deviation is 32.98788.
+
+```{r}
+summary(airquality$Ozone) 
+sd(airquality$Ozone) 
+sd(airquality$Ozone, na.rm = TRUE)
+```
+
+(d)  
+Summary: The summary command handles NA's by excluding them in the calculation of the summary statistics and includes a count of how many 'NA' values are present. The summary statistics are calculated only using non-missing values.
+
+sd(airquality$Ozone): The sd command handles 'NA' by by returning NA if there are any present in the Ozone column.
+
+sd(airquality$Ozone, na.rm = TRUE):The 'na.rm' command instructs the sd function to remove the NA values before calculating the standard deviation.
+
+
+```{r}
+airquality1 <- na.omit(airquality)
+dim(airquality) - dim(airquality1)
+```
+(e)
+There are 42 rows of the airquality data frame that have one or more missing values.
+
+# Exercise 4
+(a)
+```{r}
+p <- seq(from = 0, to = 1, by = 0.2)
+p
+```
+
+(b)
+```{r}
+f_p <- p * (1 - p)
+
+plot(p, f_p, type = "b", col = "blue", pch = 19, 
+     xlab = "p", ylab = "p(1 - p)", 
+     main = "Plot of f(p) = p(1 - p)")
+
+grid()
+```
+
+(c)
+```{r}
+p <- seq(from = 0, to = 1, by = 0.01)
+
+f_p <- p * (1 - p)
+
+plot(p, f_p, type = "l", col = "blue", lwd = 2, 
+     xlab = "p", ylab = "p(1 - p)", 
+     main = "Plot of f(p) = p(1 - p)")
+
+grid()
+
+```
+# Exercise 5
+```{r}
+movies <- read.csv("https://ericwfox.github.io/data/movies.csv")
+
+hist(movies$runtime, main = "Histogram of Movie Runtimes",
+     xlab = "Runtime",
+     ylab = "Frequency")
+boxplot(movies$runtime, main = "Boxplot of Movie Runtimes",
+        xlab = "Runtime",
+        ylab = "Frequency")
+```
+
+(a) 
+The median runtime for movies seems to be around 100 minutes. The *shape* of the histogram shows the the *distribution* of runtimes is right skewed. Most of the data shows that movies tend to be between 80 and 120 minutes long. The *spread* of the data can be observed in the range of the data from 60 to 150 minutes. The boxplot shows several outliers above the upper whisker. This indicates that there are movies with runtimes greater than 150 minutes. There is also one outlier at the bottome whisker. This indicates a significantly shorter runtime.
+
+```{r}
+plot(movies$runtime, movies$audience_score,
+     main = "Scatterplot of Runtime vs Audience Score",
+     xlab = "Runtime",
+     ylab = "Audience Score")
+model1 <- lm(movies$audience_score ~ movies$runtime)
+abline(model1, col ="red")
+```
+(b) The least squares line does seem to suggest a positive association between runtime and the audience score. The points of the data seem to be somewhat scattered around the least squares line. This would suggest possibly a weak or moderate association. It does seem a linear relationshi with some outliers past 150 minute runtime.
+
+```{r}
+movies$mpaa_rating <- factor(movies$mpaa_rating, levels = c("G", "PG", "PG-13", "R", "NC-17", "Unrated"))
+
+boxplot(imdb_rating ~ mpaa_rating, data = movies,
+        main = "IMDB Ratings by MPAA Rating",
+        xlab = "MPAA Rating",
+        ylab = "IMDB Rating",
+        col = c("lightblue", "royalblue", "lightgreen", "green", "yellow", "orange"))
+```
+

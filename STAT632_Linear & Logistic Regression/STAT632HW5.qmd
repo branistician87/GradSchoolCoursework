@@ -1,0 +1,111 @@
+---
+title: "STAT 632 HW 5"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+```{r}
+hdi = read.csv("hdi2018.csv")
+```
+
+## Exercise 1
+
+### (a)
+
+```{r}
+full.model <- lm(hdi_2018 ~ median_age + pctpop65 + pct_internet + pct_labour, data = hdi)
+summary(full.model)
+```
+
+### (b)
+
+Based on the summary statistics there is evidence of a relationship between hdi_2018 and some of the predictor variables. Those include; median_age, and pct_internet.
+
+$H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0$
+
+vs
+
+$H_A:$ at least one $\beta_{j} \neq 0$
+
+The F-statistic reported is 341.5 with a p-value of 2.2e-16 which is essentially 0. We can conclude that at least one $\beta$ means is significantly different from the others.
+
+### (c)
+
+Only median_age and pct_internet are statistically significant at the 0.05 significance level.
+
+### (d)
+
+```{r}
+reduced.model <- lm(hdi_2018 ~ median_age + pct_internet, data = hdi)
+anova(reduced.model, full.model)
+```
+
+$H_0: \beta_{median-age} = \beta_{pct-internet}$
+
+vs
+
+$H_A:$ At least one of $\beta_{median-age}, \beta_{pct-internet} \neq 0$
+
+With a p-value of 0.7269, we fail to reject the $H_0$ and can conclude that there is no significant evidence that pctpop65 and pct_labour improve the model beyond what is already explained by median_age and pct_internet.
+
+### (e)
+
+```{r}
+s1 <- summary(full.model)
+s2 <- summary(reduced.model)
+
+s1$adj.r.squared
+s2$adj.r.squared
+```
+
+According to the adjusted $R^2$ the reduced model is slightly better than the full model. This supports the result of the partial F-test from part (d), where we found no significant improvement when adding pctpop65 and pct_labour. Therefore, the reduced model is preferable due to model performance.
+
+## Exercise 2
+
+### (a)
+
+```{r}
+pairs(hdi_2018 ~ median_age + pct_internet, data = hdi)
+```
+
+The scatterplot matrix shows a strong positive linear relationship between both predictor variables median_age, pct_internet with hdi_2018. Median age and internet usage themselves are positively related, suggesting some correlation between the predictors. These linear trends suggest that a multiple linear regression model may be appropriate for this dataset.
+
+### (b)
+
+```{r}
+par(mfrow = c(1,2))
+plot(predict(reduced.model), rstandard(reduced.model),
+     xlab = "Fitted Values",
+     ylab = "Standardized Residuals")
+abline(h = 0)
+qqnorm(rstandard(reduced.model))
+qqline(rstandard(reduced.model))
+
+```
+
+The residuals vs fitted values plot shows no strong pattern, suggesting the assumptions of linearity and approximately constant variance are met. The QQ plot indicates the residuals are approximately normally distributed, with only slight deviation in the tails. Overall, the model assumptions for multiple linear regression appear adequately satisfied.
+
+### (c)
+
+```{r}
+p <- 3
+n <- nrow(hdi)
+plot(hatvalues(reduced.model), rstandard(reduced.model),
+     xlab = "Leverage",
+     ylab = "Standardized Residuals",
+     xlim = c(0, 0.05))
+abline(v = 2*(p+1)/n, lty = 2)
+abline(h = c(-2,2), lty = 2)
+```
+
+```{r}
+outlier <- which(abs(rstandard(reduced.model)) > 2)
+leverage <- which(hatvalues(reduced.model) > 2*(p+1)/n)
+hdi[outlier,]
+hdi[leverage,]
+```
+
+### (d)
+
+Based on the scatterplot matrix and diagnostic plots, the assumptions of multiple linear regression appear to be reasonably satisfied. The relationships between predictors and HDI are lienar, the residuals are approximately normally distributed and there is no evidence of strong heteroscedisticity. Additionally, there are no high-leverage or influential observations, although a few data points exhibit large standardized residuals and may warrant closer inspection overall, the model fits well. In order to improve the model we might consider introducing some interactinos terms to determine how that might affect the adjusted $R^2$.

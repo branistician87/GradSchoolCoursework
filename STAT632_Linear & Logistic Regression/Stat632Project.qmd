@@ -1,0 +1,413 @@
+---
+title: "Stat632 Project"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+## World Happiness Index
+
+A. Introduction
+
+Research goal: We aim to predict a country's Happiness Score using economic and social indicators.
+
+B. Data Description
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(pacman)
+p_load(tidyverse, janitor, naniar, mlbench)
+```
+
+```{r, warning = FALSE, message=FALSE}
+library(readr)
+WHI <- read_csv("WHI_Inflation.csv")
+# head(WHI)
+```
+
+```{r}
+WHI <- clean_names(WHI)
+
+# sort(WHI$score, decreasing = TRUE)
+```
+
+```{r}
+WHI$year <- as.factor(WHI$year)
+
+ggplot(WHI, aes(x = score)) +
+  geom_histogram(fill = "#2E358E", color = "black") +
+  labs(title = "Figure 1.1",
+       subtitle = "Distribution of World Happiness Scores",
+       x = "Happiness Score",
+       y = "Frequency") +
+  theme_minimal()
+  
+
+# ggplot(WHI, aes(x = score, color = year)) +
+#  geom_histogram() +
+#  facet_wrap(~ year)
+
+range(WHI$score)
+
+WHI_means <- WHI %>% 
+  group_by(year) %>% 
+  summarise(mean(score))
+WHI_means
+
+ggplot(WHI_means, aes(x = year, y = `mean(score)`)) +
+  geom_point(size = 2) +
+  labs(title = "Figure 1.2",
+       subtitle = "Average World Happiness Score by Year",
+       x = "Year",
+       y = "Mean Happiness Score") +
+  theme_minimal()
+```
+
+We see a slight left skew in the happiness scores for countries. More countries have higher happiness scores. The mean happiness scores are increasing from 2015 to 2023.
+
+```{r}
+head(WHI)
+
+WHI <- WHI %>% 
+  rename(overall_infl = headline_consumer_price_inflation,
+         energy_infl = energy_consumer_price_inflation,
+         food_infl = food_consumer_price_inflation,
+         gdp_deflator = gdp_deflator_index_growth_rate,
+         gdp = gdp_per_capita,
+         life_expectancy = healthy_life_expectancy_at_birth,
+         freedom = freedom_to_make_life_choices,
+         corruption = perceptions_of_corruption,
+         happy_score = score)
+
+summary(WHI)
+```
+
+\newpage
+
+```{r}
+# Clean the data first
+WHI_clean <- na.omit(WHI)
+
+# Then fit models on the cleaned data
+lm_full_WHI <- lm(happy_score ~ ., data = WHI_clean)
+sum_lm_full_WHI <- summary(lm_full_WHI)
+
+# Stepwise selection
+lm_WHI <- step(lm_full_WHI, trace = 0)
+sum_lm_WHI <- summary(lm_WHI)
+
+
+c(sum_lm_full_WHI$r.squared, sum_lm_WHI$r.squared)
+c(sum_lm_full_WHI$adj.r.squared, sum_lm_WHI$adj.r.squared)
+
+
+anova(lm_WHI, lm_full_WHI) # partial F-test
+```
+
+When we remove \`overall_infl\`, \`energy_infl\`, and \`gdp_deflator\`, \`food_infl\` becomes more significant. 7 predictors are concluded to be significant. The partial F-test tells us that the reduced model is a sufficient model. We can remove the other predictors.
+
+```{r}
+# reduced model 
+pairs(happy_score ~ food_infl + gdp + social_support + life_expectancy + 
+    freedom + generosity + corruption, data = WHI)
+```
+
+```{r}
+plot(lm_WHI, which = 2)
+shapiro.test(resid(lm_WHI)) # not normal 
+
+plot(lm_WHI, which = 1)
+```
+
+```{r}
+library(car)
+summary(powerTransform(lm_WHI))
+```
+
+Start from scratch: Keep all variables but remove missing values. Does anything change?
+
+```{r, warning = FALSE, message=FALSE}
+WHI <- read_csv("WHI_Inflation.csv")
+WHI <- clean_names(WHI)
+WHI <- WHI %>% 
+  select(-country, -year, -continent_region) %>% # remove ID variables
+  na.omit() # remove missing values
+# gg_miss_var(WHI) # show number of NA values
+# gg_miss_var(WHI, show_pct = TRUE)
+
+WHI <- WHI %>% 
+  rename(overall_infl = headline_consumer_price_inflation,
+         energy_infl = energy_consumer_price_inflation,
+         food_infl = food_consumer_price_inflation,
+         consumer_infl = official_core_consumer_price_inflation,
+         producer_infl = producer_price_inflation,
+         gdp_deflator = gdp_deflator_index_growth_rate,
+         gdp = gdp_per_capita,
+         life_expectancy = healthy_life_expectancy_at_birth,
+         freedom = freedom_to_make_life_choices,
+         corruption = perceptions_of_corruption,
+         happy_score = score)
+
+mean(WHI$happy_score)
+
+lm_none_removed <- lm(happy_score ~., data = WHI)
+summary(lm_none_removed)
+
+best_none_removed <- step(lm_none_removed, trace = 0)
+summary(best_none_removed)
+
+anova(best_none_removed, lm_none_removed) # partial F-test
+```
+
+```{r}
+# top 5 happiness scores
+WHI <- read_csv("WHI_Inflation.csv")
+
+WHI <- clean_names(WHI)
+WHI <- WHI %>% 
+  rename(overall_infl = headline_consumer_price_inflation,
+         energy_infl = energy_consumer_price_inflation,
+         food_infl = food_consumer_price_inflation,
+         consumer_infl = official_core_consumer_price_inflation,
+         producer_infl = producer_price_inflation,
+         gdp_deflator = gdp_deflator_index_growth_rate,
+         gdp = gdp_per_capita,
+         life_expectancy = healthy_life_expectancy_at_birth,
+         freedom = freedom_to_make_life_choices,
+         corruption = perceptions_of_corruption,
+         happy_score = score)
+
+score_summary <- WHI %>% 
+  group_by(country) %>% 
+  summarise(mean_score = mean(happy_score, na.rm = TRUE)) %>% 
+  arrange(mean_score)
+score_summary
+```
+
+\| Country \| Happiness Score \|
+
+\|:\-\-\-\-\-\--:\|:\-\-\-\-\-\-\-\-\-\-\-\-\-\--:\|
+
+\| Finland \| 7.663 \|
+
+\| Denmark \| 7.580 \|
+
+\| Iceland \| 7.522 \|
+
+\| Switzerland \| 7.493 \|
+
+\| Norway \| 7.474 \|
+
+\| Country \| Happiness Score \|
+
+\|:\-\-\-\-\-\--:\|:\-\-\-\-\-\-\-\-\-\-\-\-\-\--:\|
+
+\| Afghanistan \| 2.991 \|
+
+\| Central African Republic \| 3.203 \|
+
+\| South Sudan \| 3.269 \|
+
+\| Burundi \| 3.278 \|
+
+\| Rwanda \| 3.399 \|
+
+\# transform model
+
+```{r}
+lm_trans <- lm((happy_score^2) ~ overall_infl + energy_infl + gdp + social_support + 
+    life_expectancy + freedom + generosity + corruption, data = WHI)
+summary(lm_trans)
+
+shapiro.test(resid(lm_trans))
+# bptest(lm_trans)
+```
+
+\# polynomial model
+
+```{r}
+library(lmtest)
+
+WHI_clean <- WHI %>% 
+  select(-country, -year, -continent_region) %>%
+  na.omit()
+
+lm_poly <- lm(happy_score ~ overall_infl + energy_infl + food_infl + consumer_infl + producer_infl + gdp_deflator + gdp + social_support + life_expectancy + freedom + generosity + corruption + I(overall_infl^2) + I(energy_infl^2) + I(food_infl^2) + I(consumer_infl^2) + I(producer_infl^2) + I(gdp_deflator^2) + I(gdp^2) + I(social_support^2) + I(life_expectancy^2) + I(freedom^2) + I(generosity^2) + I(corruption^2), data = WHI_clean)
+
+summary(lm_poly)
+
+shapiro.test(resid(lm_poly))
+bptest(lm_poly) # alpha = 0.01
+
+best_poly <- step(lm_poly, trace = 0)
+summary(best_poly)
+
+shapiro.test(resid(best_poly))
+bptest(best_poly)
+```
+
+```{r}
+final_lm <- lm(happy_score ~ overall_infl + energy_infl + 
+    gdp + social_support + life_expectancy + freedom + generosity + 
+    corruption + I(gdp^2) + 
+    I(life_expectancy^2) + I(corruption^2), data = WHI)
+summary(final_lm)
+```
+
+## Trying a Log Transformation Instead
+
+```{r}
+lm_trans2 <- lm(log(happy_score) ~ overall_infl + energy_infl + gdp + social_support + 
+    life_expectancy + freedom + generosity + corruption, data = WHI)
+summary(lm_trans2)
+
+shapiro.test(resid(lm_trans2))
+bptest(lm_trans2)
+```
+
+```{r}
+plot(lm_trans2, 1)
+```
+
+## Let's do some Poly
+
+```{r}
+lm_cubic <- lm(happy_score ~ 
+  poly(overall_infl, 3, raw = TRUE) +
+  poly(energy_infl, 3, raw = TRUE) +
+  poly(gdp, 3, raw = TRUE) +
+  poly(social_support, 3, raw = TRUE) +
+  poly(life_expectancy, 3, raw = TRUE) +
+  poly(freedom, 3, raw = TRUE) +
+  poly(generosity, 3, raw = TRUE) +
+  poly(corruption, 3, raw = TRUE),
+  data = WHI_clean
+)
+
+
+summary(lm_cubic)
+
+shapiro.test(resid(lm_cubic))
+bptest(lm_cubic) # alpha = 0.01
+```
+
+```{r}
+best_cubic <- step(lm_cubic, trace = 0)
+summary(best_cubic)
+
+
+shapiro.test(resid(best_cubic))
+bptest(best_cubic) # alpha = 0.01
+```
+
+## Quartic
+
+```{r}
+lm_quartic <- lm(happy_score ~ 
+  poly(overall_infl, 4, raw = TRUE) +
+  poly(energy_infl, 4, raw = TRUE) +
+  poly(gdp, 4, raw = TRUE) +
+  poly(social_support, 4, raw = TRUE) +
+  poly(life_expectancy, 4, raw = TRUE) +
+  poly(freedom, 4, raw = TRUE) +
+  poly(generosity, 4, raw = TRUE) +
+  poly(corruption, 4, raw = TRUE),
+  data = WHI_clean
+)
+
+
+summary(lm_quartic)
+
+shapiro.test(resid(lm_quartic))
+bptest(lm_quartic) # alpha = 0.01
+```
+
+```{r}
+best_quartic <- step(lm_quartic, trace = 0)
+summary(best_quartic)
+
+
+shapiro.test(resid(best_quartic))
+bptest(best_quartic) # alpha = 0.01
+```
+
+# Cross Validation
+
+```{r}
+set.seed(632) # set seed for reproducibility
+
+n <- nrow(WHI_clean);n
+
+floor(0.7*n)
+
+# Randomly sample 70% of rows for training set
+train <- sample(1:n, 403)
+
+lm_train <- lm(happy_score ~ overall_infl + energy_infl + gdp + social_support +
+                   life_expectancy + freedom + generosity + corruption, data = WHI_clean, subset = train)
+
+summary(lm_train)
+
+```
+
+# Make Predictions on the Test Set
+
+```{r}
+# subset data frame for testing observations
+WHI_test <- WHI_clean[-train, ]
+
+# make predictions for probabilities on test set
+probs_test <- predict(lm_train, newdata = WHI_test)
+
+length(probs_test)
+
+preds_test <- rep(0, 173)
+preds_test[probs_test > 0.5] <- 1
+
+head(probs_test)
+```
+
+## Calculate the test performance metrics
+
+```{r}
+library(caret) # for cross-validation methods
+
+predictions <- lm_train %>% predict(WHI_test)
+data.frame(R2 = R2(predictions, WHI_test$happy_score),
+           RMSE = RMSE(predictions, WHI_test$happy_score),
+           MAE = MAE(predictions, WHI_test$happy_score))
+```
+
+**Test** $R^2$ **:**The model explains about 73.17% of the variation in happiness score on unseen data.
+
+**Test RMSE:** On average our prediction is 0.51 happiness points off from the true value
+
+**Test MAE:** The mean absolute error is about 0.40 points. Solid and consistent with RMSE
+
+After performing a 70/30 cross-validation the final linear model achieved a Test $R^2$ of 0.7317 indicating that about 73% of the variance in happy_score can be explained in the new data. The test RMSE was approximately 0.508 meaning predictions are off by about half a happiness point on average. These results suggest the model generalizes well beyond the training data.
+
+## Random Forest
+
+```{r}
+WHI_train <- WHI_clean[train, ]
+library(randomForest)
+
+set.seed(632) # set seed for reproducibility
+rf1 <- randomForest(happy_score ~ ., data = WHI_train, importance = TRUE)
+
+# predict happiness score on test data
+rf_preds <- predict(rf1, newdata = WHI_test)
+
+
+rf_results <- lm_train %>% predict(WHI_test)
+data.frame(R2 = R2(rf_preds, WHI_test$happy_score),
+           RMSE = RMSE(rf_preds, WHI_test$happy_score),
+           MAE = MAE(rf_preds, WHI_test$happy_score))
+
+
+varImpPlot(rf1)
+```
+
+The Random Forest model outperformed the linear regression model, achieving a test R² of 86.2% and an RMSE of 0.400. The most important predictors identified by the Random Forest were corruption, GDP, freedom, and social support. These findings reinforce the critical role that both economic and social factors play in determining national happiness.

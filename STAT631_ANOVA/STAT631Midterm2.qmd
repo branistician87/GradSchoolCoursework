@@ -1,0 +1,211 @@
+---
+title: "Stat631 Midterm 2"
+author: "Brandon Keck (netID qh9701)"
+format: pdf
+editor: visual
+---
+
+1.  \(a\) BK
+2.  \(b\) BK
+
+```{r, warning = FALSE, message=FALSE}
+library(car)
+library(emmeans)
+library(tidyverse)
+library(readr)
+```
+
+Uploading various datasets
+
+```{r}
+frog <- read.table("frog.txt")
+head(frog)
+str(frog)
+```
+
+## 
+
+## 2.
+
+### (2a)
+
+```{r}
+fit <- aov(en ~ species, data = frog)
+
+boxplot(en ~ species, data = frog)
+```
+
+### (2b)
+
+From the boxplot we see that the species dhaka, nepalensis, pierrei are fairly similar. However, the species teraiensis's median en is the highest out of all of the species. Teraiensis also has two noticeable outliers around 2.5 en. Asmati has the second highest median around 2.6 en.
+
+### (2c)
+
+```{r}
+anova(fit)
+```
+
+### (2d)
+
+$H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4 = \mu_5$
+
+vs
+
+\$H_A: at least one species mean en is different from the rest.
+
+From the anova output we see a very small p-value of 6.146e-16 which is essentially 0. We also have an F-statistic of 41.836. From this we reject the null hypothesis and can conclude that there is a difference is mean en between at least one of the species of frogs.
+
+### (2e)
+
+#### (i)
+
+The assumption of ANOVA that I would check with a Residuals vs Fitted Values plot is Equal variance. We are checking to ensure that the distribution of the residuals over the fitted values has randomization in the spread. That there is no pattern or fanning.
+
+#### (ii)
+
+```{r}
+plot(fit, which = 1)
+leveneTest(en ~ species, data = frog)
+```
+
+#### 
+
+From the plot it seems that the equal variance assumption for ANOVA is satisfied. We can also check with the levene test for equal variance. With a p-value of 0.7787 which is larger than our significance level of 0.05 we can conclude equal variance.
+
+### (2f)
+
+#### (i)
+
+The assumption of ANOVA I would be checking is the Normality of the residuals. Here we are checking to see if the residuals follow the normal QQ line to ensure that the Normality Assumption is satisfied.
+
+#### (ii)
+
+```{r}
+plot(fit, which = 2)
+shapiro.test(fit$residuals)
+```
+
+From the Normal QQ plot we witness major deviation towards the left side and there is some slight deviation of the right side of the plot. This means that the Normality assumption is not satisfied. We can double check with the shapior wilk test. WIth a p-value of 0.01144 which is less than our significance level of 0.05 we reject $H_0$ meaning that the data deviates from Normality.
+
+### (2g)
+
+In order to proceed with the ANOVA test the other assumption needed is Independence within and between groups.
+
+### (2h)
+
+```{r}
+
+ptf <- powerTransform(fit)
+summary(ptf)
+
+fit$y_new <- bcPower(fit$en, ptf$roundlam)
+
+#newfit <- aov(y_new ~ species, data = fit)
+#anova(newfit)
+```
+
+### (2i)
+
+```{r}
+#lsmFrogs <- lsmeans(fit, ~ en)
+#summary(contrast(lsmFrods, method = "pairwise", adjust = "tukey"), infer = c(T,T))
+```
+
+### (2j)
+
+```{r}
+#contrast(lsmFrogs, method = "trtvsctrl", adjust = "mvt", ref = 5,
+        # infer = c(T,F))
+```
+
+### (2k)
+
+```{r}
+wi = c(1/4, 1/4, 1/4, 1/4, -1)
+
+lsmfrog <- emmeans(fit, ~ species)
+contrast(lsmfrog, method = list(ctrts = wi), infer = c(T,T))
+```
+
+### (2l)
+
+```{r}
+kruskal.test(en ~ species, data = frog)
+```
+
+Since the p-value is less than our significance level of 0.05 we reject the null hypothesis. This means that at least one species has a significantly different median than the others.
+
+### (2m)
+
+What I can conclude from the non-parametric test is that at least one species has a significantly different median than that of the others. This agrees with my results in part (c)
+
+## 3.
+
+```{r}
+fertilizer <- read.table("fertilizer.txt")
+head(fertilizer)
+
+```
+
+### (3a)
+
+```{r}
+fit1 <- aov(Yield ~ Fertilizer, data = fertilizer)
+
+stripchart(Yield ~ Fertilizer, data = fertilizer, vertical = T)
+```
+
+From the stripchart the variability between the first three levels of fertilizer 0, 50, and 100 all being approximately the same. While the fertilizer with 150kg/ha has the lowest yield of them all.
+
+### (3b)
+
+```{r}
+anova(fit1)
+```
+
+From the ANOVA table we get a p-value of 4.844e-05 which is less than our significance level of 0.05. We also have a large F-statistic of 28.12. We have enough evidence to conclude that there is a difference in mean between crop yield between the four fertilizers.
+
+### (3c)
+
+Since there are g = 4 treatments, the highest order we can consider at first is g - 1 =3.
+
+### (3d)
+
+```{r}
+p0 <- lm(Yield ~ 1, data = fertilizer)
+p1 <- lm(Yield ~ Fertilizer, data = fertilizer)
+p2 <- lm(Yield ~ poly(Fertilizer, 2, raw = TRUE), data = fertilizer)
+p3 <- lm(Yield ~ poly(Fertilizer, 3, raw = TRUE), data = fertilizer)
+anova(p0,p1,p2,p3)
+```
+
+The ANOVA shows that terms up to $Fertilizer^2$ are needed.
+
+### (3e)
+
+The polynomial (orthogonal) contrast can be used, because the quantitative treatment levels are all equally spaced and the sample sizes are all the same.
+
+### (3f)
+
+```{r}
+fertilizer$fFertilizer <- as.factor(fertilizer$Fertilizer)
+
+mod <- aov(Yield ~ fFertilizer, data = fertilizer)
+
+lsmeans(mod, poly ~ fFertilizer)
+```
+
+The quadratic model with first order is good enough for this dataset, since cubic p-value of the tests for that term are not significant. The highest order is 2. This confirms our finding earlier in part (d).
+
+### (3g)
+
+```{r}
+mod2 <- lm(Yield ~ Fertilizer, data = fertilizer)
+predict(mod2, data.frame(Fertilizer = c(75, 125)))
+```
+
+When the percentages of fertilizer used in the blend of materials is 75% and 125% the predicted mean yield are 0.0332 and -3.215 respectively.
+
+### (3h) 
+
+It is not reasonable to predict for 200kg/ha with the current model because from the earlier provided stripchart we can see that as the percentage of fertilizer is added to the crops the amount of yield also declines. From the previous prediction of 125kg/ha we see that we even start to loose crop yields. It would appear that anything from (0, 75kg/ha) is appropriate in terms of mean crop yield.

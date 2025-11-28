@@ -1,0 +1,183 @@
+---
+title: "Stat631Final"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+## 1.
+
+**BK** This submission is entirely my own work. This means you are not allowed to discuss the exam questions with anyone, including roommates or housemates who are enrolled in this course.
+
+**BK** As a member of the academic community, I am expected to act with integrity and avoid plagerism and other forms of cheating. I agree to uphold the standards of academic integrity described at CSUEB Academic Dishonesty Policy.
+
+**BK** If I am found to have participated in any form of academic dishonesty, I will fail the exam and an academic dishonesty incident report will be filed.
+
+```{r, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(car)
+library(emmeans)
+library(dplyr)
+library(lme4)
+library(lmerTest)
+library(EMSaov)
+```
+
+## 2.
+
+### (2a)
+
+```{r}
+# read in the dataset
+fitness <- read.table("fitness.txt", header = T)
+str(fitness)
+```
+
+```{r}
+# Change factor variables to factors
+fitness <- within(fitness, {fitness.change <- fitness6weeks - pre.fitness
+fgender <- factor(gender, labels = c("Female", "Male"))
+fprogram <- factor(program, labels = c("Program 1", "Program 2", "Program 3"))})
+# Check the structure
+str(fitness)
+```
+
+### (2b)
+
+```{r}
+# Create the interaction plot
+with(fitness, interaction.plot(x.factor = fprogram, trace.factor = fgender, 
+                               response = fitness.change, type = "b", 
+                               col = c("pink", "blue"), pch = c(19, 17)))
+# Blue = Males
+# Pink = Females
+```
+
+The interaction plot shows average fitness change by program and gender. For males (blue), the mean fitness change steadily increased across programs, but only slightly. For females (pink), there is a sharp increase in fitness change from Program 2 to Program 3. The lines intersect, suggesting a possible interaction between gender and program. Program 3 appears to be especially effective for females, indicating that the Program effect may differ by gender.
+
+### (2c)
+
+Gender is the natural blocking factor since we could simply divide our subjects into gender classes. Genders have biological differences such as height, weight, etc., that can cause variation in the response variable. By using gender as a blocking factor we can group similar responses together and reduce the extra variability.
+
+### (2d)
+
+```{r}
+# Create the model
+mod1 <- aov(fitness.change ~ fprogram + fgender, data = fitness)
+summary(mod1)
+```
+
+### (2e)
+
+From the ANOVA table and using a significance level of $\alpha = 0.05$, the p-value for gender is 0.67389. Since this p-value is greater than our significance level of 0.05, we fail to reject the null hypothesis. This indicates that there is no statistically significant difference in fitness change between males and females.
+
+### (2f)
+
+From the ANOVA table and using a significance level of $\alpha = 0.05$ the p-value for program is 0.00344. Since this is less than our significance level of 0.05, we reject the null hypothesis and conclude that there is a statistically significant difference in mean fitness change among programs.
+
+### (2g)
+
+```{r}
+# Check ANOVA assumptions
+plot(mod1, 1:2)
+shapiro.test(resid(mod1))
+leveneTest(fitness.change ~ fprogram * fgender, data = fitness)
+```
+
+The Residuals vs Fitted plot does not show any discernible pattern or fan shape, so the assumptions of constant variance appears to be satisfied. The Levene's test for Homogeneity of variance returned a p-value of 0.8227, which is greater than the significance level $\alpha = 0.05$. The Normal Q-Q plot shows that the residuals are approximately normally distributed, with only minor deviations in the tails. The Shapiro-Wilk test produced a p-value of 0.847 providing no evidence against the normality assumption. Therefore, we can conclude that the assumptions for ANOVA are reasonably met.
+
+### (2h)
+
+Based on the ANOVA table output there is strong evidence that the fitness programs have different effects on fitness level. With a p-value of 0.00344 \< $\alpha = 0.05$ this indicates that the program a person participated in has meaningful impact on their fitness.
+
+## 3.
+
+```{r}
+# read in the dataset
+drug <- read.table("drug.txt", header = T)
+#Convert factor variables to a factor
+drug <- within(drug, {Facility = as.factor(Facility); 
+Batch = as.factor(Batch); 
+Sample = as.factor(Sample)})
+# Check the structure
+str(drug)
+```
+
+### (3a)
+
+Three factors: Facility, Batch and Sample
+
+### (3b)
+
+All three factors; Facility, Batch and Sample are random.
+
+### (3c)
+
+```{r}
+# From Dr. Myung
+knitr::include_graphics("(3c).png")
+```
+
+### (3d)
+
+Both Batch and Facility are nested factors in the model.
+
+### (3e)
+
+$Y_{ijk} = \mu + F_{i} + B_{j(i)} + \epsilon_{k(ij)}$
+
+-   $\mu$ is the overall mean
+
+-   $F_i$ is the effect on the i-th facility
+
+-   $B_{j(i)}$ $\sim$ N(0, $\sigma^2)$ is the random effect on the j-th batch
+
+-   $\epsilon_{k(ij)}$ $\sim$ N(0,$\sigma^2)$ is the residual error
+
+### (3f)
+
+```{r}
+#Create the model
+mod2 <- lmer(Potency ~ 1 + (1|Facility) + (1|Facility:Batch), data = drug)
+summary(mod2)
+```
+
+The largest source of variability in drug potency is Facility with a variance estimate of 15.4697. The smallest component of variance is residual variance, with 0.2245.
+
+### (3g)
+
+```{r}
+ranova(mod2)
+```
+
+Facility and Batch are both significant. There is significant variability in drug potency between the production facilities and between batches within the facilities.
+
+### (3h)
+
+```{r}
+fit <- EMSanova(Potency ~ Facility + Batch, data = drug, type = c("R", "R"), 
+                nested = c(NA, "Facility"))
+fit
+```
+
+Facility has highly significant effects with a p-value of 0.0001. Batches also had a significant effects with a p-value of 0.001. So both are still significant.
+
+### (3i)
+
+Both part h and part f are consistent with each other. In both models we see that Facility is significant. Also Batch was significant in part f. Both parts h and f lead to the same conclusions. Facility has the largest variance in both models and the residuals has the smallest variance in both parts h and f.
+
+### (3j)
+
+```{r}
+# Checking Equal Variance
+plot(mod2,resid(.,scaled =TRUE)~fitted(.),abline =c(-2,0,2))
+```
+
+```{r}
+# Check Normality
+qqnorm(resid(mod2))
+qqline(resid(mod2), col = "blue")
+shapiro.test(resid(mod2))
+```
+
+The Shapiro-Wilk test gave a p-value of 0.02133, which is greater than the significance level of $\alpha = 0.01$. Therefore, we fail to reject the null hypothesis of normality, and the assumption of normality is satisfied. Therefore, the assumptions of ANOVA are satisfied.

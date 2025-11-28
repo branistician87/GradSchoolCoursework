@@ -1,0 +1,172 @@
+---
+title: "Midterm 1 STAT632"
+author: "Brandon Keck (netID qh9701)"
+format: pdf
+editor: visual
+---
+
+```{r, warning = FALSE, message=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+ice_cream <- read_csv("~/Documents/EastBay/Spring2025/Stat632Regression/ice_cream.csv")
+```
+
+```{r}
+# head(ice_cream)
+```
+
+## Question 1.
+
+### a)
+
+## Corrected
+
+```{r}
+lm1 <- lm(Sales ~ Temperature, data = ice_cream)
+
+plot(Sales ~ Temperature, data = ice_cream,
+     xlab = "Temperature",
+     ylab = "Sales",
+     main = "Scatter plot of Sales vs Temperature")
+
+abline(lm1, col = "red")
+```
+
+```{r}
+par(mfrow = c(1,2))
+hist(ice_cream$Temperature, main = "Histogram of Temp")
+hist(ice_cream$Sales, main = "Histogram of Sales")
+```
+
+Based on the scatter plot and the histograms the assumption of Linearity comes into question. We can see from the scatter plot that the data does not follow a linear pattern. In fact it looks like it might be a quadratic. The histogram of sales shows some right skew to it. The variance appears to be fairly constant.
+
+### Reflection:
+
+I lost points here because I wasn't sure about how to do the Marginal Residuals plots. I thought I just had to do the Residuals vs Fitted plot which is a diagnostic tool but it doesn't show whether the residuals are skewed for specific predictor values.
+
+### b)
+
+## Corrected
+
+```{r}
+lm2 <- lm(Sales ~ Temperature + I(Temperature^2), data = ice_cream)
+
+summary(lm2)
+```
+
+```{r}
+lm3 <- lm(Sales ~ poly(Temperature, 3), data=ice_cream)
+lm4 <- lm(Sales ~ poly(Temperature, 4), data=ice_cream)
+lm5 <- lm(Sales ~ poly(Temperature, 5), data=ice_cream)
+lm6 <- lm(Sales ~ poly(Temperature, 6), data=ice_cream)
+```
+
+```{r}
+summary(lm3)
+```
+
+```{r}
+summary(lm4)
+```
+
+```{r}
+summary(lm5)
+```
+
+```{r}
+summary(lm6)
+```
+
+```{r}
+plot(ice_cream$Temperature, resid(lm2),
+     xlab = "Temperature",
+     ylab = "Residuals")
+abline(h = 0, lty = 2)
+```
+
+Since the scatterplot suggested a non-linear relationship, I tested six polynomial models as we had previously done in class to determine the best fit. After comparing the Adjusted R-squared values the second order polynomial model (lm2) significantly improved model performance. The residual plot confirms that a second-degree polynomial sufficiently captures the data pattern.
+
+### Reflection:
+
+I originally tested many polynomial models but did not explain why I chose the final model (lm2). I also didn't explicitly compare the adjusted R-squared values or residuals plots.
+
+### c)
+
+```{r}
+qqnorm(resid(lm2))
+qqline(resid(lm2))
+```
+
+From the Normal QQ plot we see that most of the data follows the line. There is some curvature at both ends of the tails however this looks like we are on the right track in transforming our data. Therefore the assumption of Normality appears to be satisfied.
+
+### d)
+
+Simple linear regression model for the population $$ Y_i = \beta_0 + \beta_1x + \beta_2 x^2 + \epsilon_i $$
+
+### e)
+
+```{r}
+ind <- which(abs(rstandard(lm2)) > 2)
+
+ice_cream[ind, ]
+```
+
+It seems that there is only two outliers within our new Polynomial model. However, we have no indication that these are incorrect and so we have no motivation to remove them.
+
+## Question 2.
+
+### a)
+
+```{r}
+summary(lm2)
+```
+
+From the R output we can see that all variables included in our model are useful in explaining Sales our variable of interest. We have an $R^2$ of 93% mean that 93% of the variability of Sales can be explained by Temperature
+
+### b)
+
+Estimated Regression Equation: $$ \hat{y_i} = \hat{\beta_0} - \hat{\beta_1} x_1 + \hat{\beta} x_2 ^2 $$
+
+$$ \boxed{\hat{Sales} = 2.95177 -0.82468(Temperature) + 1.82953(Temperature^2)} $$
+
+### c)
+
+The intercept represents the predicted Sales when Temperature is 0. If the temperature were to be 0 the model predicts Sales to be \$2.95. Typically when we interpret the intercept there is no value in the context of the problem because our predictor variables aren't typically 0. For instance the Fandango movie rating it wouldn't be logical to consider an IMDb rating of 0 because ratings are typically from 1-5. However, ice cream can be 0 or below. Reviewing the data itself there are negative values and some values that are even essentially 0. So in the context of this problem the interpretation is meaningful.
+
+### d)
+
+$$ \hat{Sales} = 2.95177 -0.82468(2) + 1.82953(2^2) $$
+
+```{r}
+2.95177 -0.82468 * (2) + 1.82953 * (2^2)
+```
+
+From the formula we calculated the point estimate for the sales unit of ice cream when the temperature is 2 degrees Celsius is approximately 8.621
+
+```{r}
+pred <- data.frame(Temperature = 2)
+predict(lm2, newdata = pred, interval = "prediction")
+```
+
+We are 95% confident that the Sales units of ice cream when the temperature is 2 degrees Celsius will be 8.621 and that the sales units will fall between 1.94 and 15.303.
+
+### e)
+
+### Corrected
+
+```{r}
+new_x <- data.frame(Temperature = 2)
+predict(lm2, newdata = new_x, interval = "prediction", level = 0.97)
+```
+
+So our predicted value is still 8.621 when the temperature is 2 degrees C. However, we now see that our interval has widened even more to 1.186 to 16.055.
+
+For a temperature of 2 degrees C, the predicted sales are 8.62 units. Additionally, the 97% prediction interval is (1.19, 16.06). This means that if the temperature is 2 degrees C, the actual number of ice cream sales is likely to be between 1.19 and 16.06 units.
+
+### Reflection:
+
+I got this problem wrong because I made the wrong interpretation of the output. I had accidentally used the wrong flashcard, which contained the incorrect response. This led me to misinterpret the prediction interval.

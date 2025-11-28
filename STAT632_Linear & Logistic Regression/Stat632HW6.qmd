@@ -1,0 +1,88 @@
+---
+title: "Stat632 HW6"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+```{r,warning = FALSE, message=FALSE}
+library(ggplot2)
+library(readr)
+county_votes16 <- read_csv("county_votes16.csv")
+```
+
+## Exercise 1.
+
+### (a)
+
+```{r}
+glm1 <- glm(trump_win ~ obama_pctvotes, data = county_votes16, family = binomial)
+summary(glm1)
+```
+
+Estimated Logistic Regression Equation:
+
+$\boxed{\hat{p}(x) = \frac{e^{20.12971 - 0.37149x}}{1 + e^{20.12971 - 0.37149x}}}$
+
+### (b)
+
+```{r}
+ggplot(county_votes16, aes(obama_pctvotes, trump_win)) + 
+  geom_point() + 
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = F) +
+  xlab("Percent Obama Votes") +
+  ylab("Estimated Probability Trump Won") +
+  theme_bw()
+```
+
+### (c)
+
+```{r}
+new_x <- data.frame(obama_pctvotes = c(40, 50, 60))
+
+predict(glm1, newdata = new_x, type = "response")
+```
+
+40%: When Obama has 40% of the votes in a specific county, the estimated probability that Trump will win that county is 99.50%
+
+50%: When Obama has 50% of the votes in a specific county, the estimated probability that Trump will win is 82.57%.
+
+60%: When Obama has 60% of the votes in a specific county, the estimated probability that Trump will win that county is 10.35%.
+
+### (d)
+
+```{r}
+exp(-0.37149)
+```
+
+For each 1 percentage point increase in Obama's 2012 vote share in a county, the log-odds of Trump winning the county in 2016 decreases by approximately 0.6897059.
+
+## Exercise 2
+
+### (a)
+
+```{r}
+glm2 <- glm(trump_win ~ pct_pop65 + pct_black + pct_white + pct_hispanic + pct_asian + highschool + bachelors + income, data = county_votes16, family = binomial)
+summary(glm2)
+```
+
+### (b)
+
+```{r}
+glm3 <- glm(trump_win ~ pct_black + pct_white + pct_hispanic + pct_asian + highschool + bachelors + income, data = county_votes16, family = binomial)
+summary(glm3)
+```
+
+### (c)
+
+-   pct_black: (-0.0366) Counties with a higher percentage of Black residents are less likely to vote for Trump.
+
+-   pct_white: (0.0819) Counties with a higher percentage of White residents are more likely to vote for Trump
+
+-   pct_hispanic: (-0.0826) Higher Hispanic population is associated with lower likelihood of Trump winning
+
+-   pct_asian: (-0.1521) Higher Asian population also predicts lower odds of Trump winning
+
+-   highschool: (-0.0437) A higher percentage of residents with at least a high school diploma is slightly associated with decreased odds of Trump winning.
+
+-   income: (0.0506) Higher per capita income is associated with a higher chance of Trump winning

@@ -1,0 +1,97 @@
+---
+title: "Stat631 Extra Credit"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(phia)
+library(emmeans)
+library(car)
+```
+
+```{r}
+coffee <- read.table("coffee.txt")
+head(coffee)
+```
+
+## 1. I would like this extra credit to be added to option 1: Midterm 2
+
+## 2 (a)
+
+2 factors: Coffee and Setting
+
+Treatments: 2 (Coffee) x 3 (Setting) = 6 treatments.
+
+```{r}
+coffee %>% 
+  group_by(Coffee, Setting) %>% 
+  summarise(n = n())
+```
+
+Replications per treatment = 5
+
+There are 6 treatment groups, each with 5 replications, totaling 30 observations. Therefore, the design is balanced.
+
+## 2 (b)
+
+```{r}
+coffee <- within(coffee, {fCoffee = factor(Coffee); fSetting = factor(Setting)})
+head(coffee)
+```
+
+```{r}
+model1 <- lm(ReactionTime ~ fCoffee*fSetting, data = coffee)
+lsmFR <- lsmeans(model1, ~ fCoffee*fSetting)
+lsmFR
+```
+
+```{r}
+ggplot(coffee, aes(x =Coffee, y = ReactionTime, color = Setting)) +
+  geom_point() +
+  stat_summary(fun = mean, geom = "line",
+               aes(group = Setting), linewidth = 2) +
+  theme_bw()
+```
+
+The interaction plot suggests there may be an interaction between the type of coffee type and study location. Specifically, the effect of coffee type on reaction time varies across different settings. This effect appears to be strongest in the Cafe, where the difference in reaction times between Decaf and Regular coffee is most pronounced. The differences are smaller in the Home and Library setting. Since the lines in the plot are not parallel, this indicates that the effect of coffee type is not consistent across the different study settings.
+
+## 2 (c)
+
+```{r}
+anova(aov(ReactionTime ~ fCoffee * fSetting, data = coffee))
+```
+
+From the ANOVA table all terms in the model are statistically significant. The main effect of coffee is highly significant which indicates that the reaction time is significantly different between Decaf and Regular coffee. We also can see that the main effect of setting is also significant. This shows us that study setting has an impact on reaction time as well. Finally, the interaction between Coffee and Setting is also significant. This confirms the effect of Coffee type and it depends on the study setting which does align with what we saw in the interaction plot. This matches our interaction plot above.
+
+## 2 (d)
+
+```{r}
+# Q-Q plot
+plot(model1, 2)
+# Shapiro test for Normality
+shapiro.test(model1$residuals) # p-value > 0.05 means that Normality satisfied
+```
+
+```{r}
+# Residuals vs Fitted values
+plot(model1, 1)
+# Levene Test
+leveneTest(ReactionTime ~ fCoffee*fSetting, data = coffee) # p-value > 0.05 Equal Variance is good
+```
+
+The Normal Q-Q plot shows that most of the residuals follow the diagonal line which indicates the normality assumption is satisfied. While there is some slight deviation at the upper end with a few outliers, the pattern is not too concerning. The Shapiro-Wilk test confirms this with a p-value of 0.8192, which is greater than our significance level of $\alpha=0.05$ which suggest that we fail to reject the null hypothesis of normality. The residuals vs. Fitted plot shows no clear pattern or funnel shape; residuals appear to be randomly scattered with constant spread across fitted values. The levene's test also confirms this with a p-value of 0.4817, which again is greater than our significance level of $\alpha = 0.05$ Equal variance assumption is satisfied. Thus the ANVOA model and results from part c are valid and reliable.
+
+## 2 (e)
+
+```{r}
+em <- emmeans(model1, pairwise ~ fCoffee | fSetting)
+em$contrasts
+plot(em$contrasts)
+```
+
+From the pairwise comparison plot, we observe that in all three setting,s students who consumed decaf coffee had significantly slower reaction times compared to those who drank regular coffee. The largest difference occurred in the Cafe setting, with a difference of 38.6 milliseconds. These results align with the earlier findings from both the interaction plot and the ANOVA table, confirming a significant interaction between coffee type and study setting on reaction time.

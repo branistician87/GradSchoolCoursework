@@ -1,0 +1,122 @@
+---
+title: "Midterm 2 STAT632"
+author: "Brandon Keck (netID: qh9701)"
+format: pdf
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(car)
+library(MASS)
+library(tidyverse)
+```
+
+```{r}
+kidney <- read.csv("Kidney.csv")
+head(kidney)
+```
+
+## 1.
+
+### (a)
+
+```{r}
+pairs(clearance ~ creatinine + age + weight, data = kidney)
+```
+
+There appears to be some negative linearity between clearance and creatinine. However the rest of the variables do not appear to have any real signs of linearity between them. It does appear that a transformation may be needed of the response variable clearance but further investigation is needed.
+
+### (b)
+
+```{r}
+lm1 <- lm(clearance ~ creatinine + age + weight, data = kidney)
+summary(lm1)
+```
+
+```{r}
+lm3 <- lm(clearance ~ creatinine, data = kidney)
+summary(lm3)$adj.r.squared
+
+lm4 <- lm(clearance ~ creatinine + age + weight, data = kidney)
+summary(lm4)$adj.r.squared
+
+lm5 <- lm(clearance ~ creatinine + age + weight + age:weight, data = kidney)
+summary(lm5)$adj.r.squared
+
+```
+
+```{r}
+plot(lm4, 1)
+```
+
+```{r}
+plot(lm4, 2)
+shapiro.test(resid(lm1)) # p-value > 0.05 Normality good
+```
+
+From the Residuals vs Fitted values plot there appears to be some fanning pattern of the residuals. However, looking at the Normal QQ plot we do see some Normality in the residuals. There is some slight deviation at the top tail. There also appears to be some outliers but it doesn't appear to be too much cause for concern. Performing a Shapiro-Wilk test though we see that the normality assumption is ok and is satisfied.
+
+### (c)
+
+```{r}
+boxcox(lm1, lambda = seq(0.3, 0.65, by = 0.05))
+summary(powerTransform(lm1))
+```
+
+Using the Box-Cox procedure, the estimated value of the parameter is $\lambda = 0$ The 95% confidence interval for $\lambda$ is between -0.2042 and 0.9639. Thus, the regression model with the transformed response is $\hat{log(clearance)} = \beta_0 + \beta_1 creatinine + \beta_2 age + \beta_3 weight$
+
+### (d)
+
+```{r}
+lm2 <- lm(log(clearance) ~ creatinine + age + weight, data = kidney)
+summary(lm2)
+```
+
+```{r}
+par(mfrow = c(1,2))
+plot(lm2, 1:2)
+```
+
+```{r}
+glm1 <- glm(log(clearance) ~ creatinine + age + weight, data = kidney)
+
+# Perform backward stepwise using AIC
+glm_sel <- step(glm1)
+summary(glm_sel)
+
+AIC(glm1, glm_sel)
+```
+
+## I'm pretty sure I messed up on part (d).
+
+I know that you are supposed to pick the model with the lowest AIC however both models yield the same results with an AIC of 265.86.
+
+### (e)
+
+```{r}
+lm6 <- lm(log(clearance) ~ creatinine + age + weight, data = kidney)
+plot(lm6, which = 2)
+shapiro.test(resid(lm6))
+```
+
+```{r}
+plot(lm6, which = 1)
+```
+
+```{r}
+summary(lm6)
+```
+
+The appropriate model is $\hat{log(clearance)} = \beta_0 + \beta_1 creatinine + \beta_2 age + \beta_3 weight$ This is validated through the Normal QQ plot of the residuals. We see that now that the response variable is transformed that the residuals follow the line better. We can test for this as well with the Shapiro-Wilk test and see that normality has improved significantly. The residuals vs fitted values plot also shows improvement of the model.The summary statistics also shows that all predictors of the model are useful in predicting log(clearance) and our adjusted r squared is 0.8638.
+
+### (f)
+
+```{r}
+new_x <- data.frame(creatinine = 0.8, age = 30, weight = 85)
+predict(lm6, newdata = new_x, interval = "prediction")
+```
+
+The estimated creatinine clearance for a male with creatinine 0.8, aged 30, and weighing 85 kilograms is 4.98. With a 95% confidence interval the creatinine clearance will be between 4.65 and 5.31.

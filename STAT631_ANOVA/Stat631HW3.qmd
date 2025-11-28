@@ -1,0 +1,253 @@
+---
+title: "Stat631 HW 3"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+
+## Exercise 1.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(car)
+library(readr)
+
+# Load in the dataset
+CTAcars <- read.table("car.dat", header = TRUE)
+head(CTAcars)
+```
+
+```{r}
+# Convert categorical data to a factor variable
+CTAcars$ftype <- as.factor(CTAcars$type)
+# head(CTAcars)
+```
+
+```{r}
+boxplot(response ~ ftype, data = CTAcars)
+```
+
+(a)
+
+$H_0: \mu_1 =\mu_2 = \mu_3 = \mu_4 = \mu_5 = \mu_6$
+
+vs
+
+$H_A:$ At least one mean is different
+
+-   **Independence**: We can assume that the car manufacturers were selected at random and that the oil consumption of one car does not influence that of another. Therefore indepdence holds both within and between the groups.
+
+-   **Normality**: The residuals deviate from the QQ line, suggesting the presence of heavy tails. However, the Shapiro-Wilk test indicates that normality can still be assumed
+
+-   **Equal variance**: Both the residuals vs fitted values plot and the results of Levene's test suggest that the assumption of homoscadasticity is met.
+
+```{r}
+full.model <- aov(response ~ ftype, data = CTAcars)
+plot(full.model, which = 2)
+```
+
+
+
+```{r}
+shapiro.test(resid(full.model))
+```
+
+```{r}
+plot(full.model, which = 1)
+```
+
+```{r}
+leveneTest(full.model)
+```
+
+```{r}
+anova(full.model)
+```
+
+Under the null hypothesis, we would expect the F value to be approximately 1. However, the observed F value is 29.193 with a p-value of 4.887e-08. Since the p-value is well below the significance level of $\alpha = 0.05$ we reject $H_0$ and conclude that there is evidence to suggest that at least one car manufacturer differs in oil consumption compared to the others.
+
+### **(b)**
+
+**(i)**
+
+*Imported cars*: Nissan (3) and Mercedes (6)
+
+\*Domestic cars\*: Ford (1), Chevrolet (2), Lincoln (4), and Cadillac (5)
+
+$C(-\frac{1}{4}, -\frac{1}{4}, \frac{1}{2}, -\frac{1}{4}, -\frac{1}{4}, \frac{1}{2})$
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+trtmeans <- CTAcars %>% 
+  group_by(ftype) %>% 
+  summarise(means = mean(response)) %>% 
+  pull(means)
+trtmeans
+```
+
+```{r}
+fit <- aov(response ~ ftype, data = CTAcars)
+ctrts <- c(-1/4, -1/4, 1/2, -1/4, -1/4, 1/2)
+
+(est <- sum(ctrts * trtmeans))
+
+# Extract MSE from ANOVA table
+MSE <- anova(fit) [2, 3]
+# Sample size
+ni <- 4
+# Compute Standard Error (SE)
+(se <- sqrt(MSE) * sqrt(sum(ctrts^2 / ni)))
+
+df_e <- anova(fit)[2, 1]
+lower.ci <- est - qt(0.975, df_e) * se
+upper.ci <- est + qt(0.975, df_e) * se
+c(lower.ci, upper.ci)
+
+(t_0 <- est/se)
+
+2*pt(-t_0, df_e)
+```
+
+```{r}
+SSw <- sum(ctrts*trtmeans)^2 / sum(ctrts^2/ni)
+F0 <- SSw/MSE
+pf(F0, 1, df_e, lower.tail = FALSE)
+
+F0
+(t_0)^2
+```
+
+The contrast estimate C = 0.7189 suggest that imported cars (Nissan and Mercedes) consume more oil per 100,000 miles than domestic cars (Ford, Chevrolet, Lincoln, and Cadillac). The 95% confidence interval (0.506, 0.932) does not include zaero, indicating that this difference is statistically significant. This provides evidence that, on average, imported cars exhibit higher oil consumption than domestic cars. Additionally, the p-value is effectively zero, leading us to reject the $H_0$. Therefore, we have strong statistical evidence that imported cars use significantly more oil compared to domestic cars.
+
+\(ii\)
+
+*Cheap cars*: Ford (1), Chevrolet (2), and Nissan (3)
+
+*Expensive cars*: Lincoln (4), Cadillac (5), and Mercedes (6)
+
+$C(\frac{1}{3}, \frac{1}{3}, \frac{1}{3}, -\frac{1}{3}, -\frac{1}{3}, -\frac{1}{3})$
+
+```{r}
+# Contrast weights for Cheap vs Expensive Cars
+ctrts2 <- c(1/3, 1/3, 1/3, -1/3, -1/3, -1/3)
+
+# Compute contrast estimate
+(est2 <- sum(ctrts2 * trtmeans))
+
+# MSE from ANOVA table
+MSE <- anova(fit)[2, 3]
+
+# Compute Standard Error (SE)
+(se2 <- sqrt(MSE) * sqrt(sum(ctrts2^2 / ni)))
+
+# Compute CI
+lower.ci_price <- est2 - qt(0.975, df_e) * se2
+upper.ci_price <- est2 + qt(0.975, df_e) * se2
+c(lower.ci_price, upper.ci_price)
+
+(t_0_price <- est2 / se2)
+
+# Compute p-value
+2 * pt(-t_0_price, df_e)
+
+```
+
+The contrast estimate C = -0.766 indicates that inexpensive cars (Ford, Chevrolet, and Nissan) consume less oil per 100,000 miles than expensive cars (Lincoln, Cadillac, and Mercedes). The 95% confidence interval (-0.967, -0.565) does not include 0, we conclude that this difference is statistically significant. This confirms that, on average, cheap cars exhibit lower oil consumption compared to expensive cars. Additionally, the p-value is essentially 0, leading us to reject the null hypothesis. Thus, we have strong evidence that cheap cars use significantly less oil than expensive cars.
+
+## Exercise 2.
+
+```{r}
+# Create weight loss data
+response <- c(8, 9, 6, 7, 3, # Low Calorie
+          2, 4, 3, 5, 1, # Low Fat
+          3, 5, 4, 2, 3, # Low Carbs
+          2, 2, -1, 0, 3) # Control (Placebo)
+
+diet <- rep(c(1, 2, 3, 4), each = 5)
+
+df <- data.frame(response, diet)
+df$fdiet <- as.factor(df$diet)
+fit.model <- lm(response ~ fdiet, data = df)
+```
+
+\(a\)
+
+$H_0: \mu_1 = \mu_2 = \mu_3 = \mu_4$
+
+vs
+
+$H_A:$ At least one diet mean is different than the others.
+
+-   Independence: Since patients were randomly assigned to each diet and one individual's weight loss does not affect another's, we can assume independence both within and between groups.
+
+-   Normality: The residuals closely follow a linear trend along the Normal QQ plot, suggesting normality. This is further confirmed by the Shapiro-Wilk test, which indicates that the residuals are consistent with a normal distribution.
+
+-   Equal Constant Variance: The residuals vs fitted values scatterplot suggests that the assumption of equal variance holds across the four diet types, as the residuals display consistent spread within similar ranges.
+
+```{r}
+# Normality
+plot(fit.model, which = 2)
+```
+
+```{r}
+shapiro.test(resid(fit.model))
+```
+
+```{r}
+# Constant variance
+plot(fit.model, which = 1)
+```
+
+```{r}
+# Fit ANOVA table
+anova(fit.model)
+```
+
+The p-value of 0.0013 is less than our significance level of $\alpha = 0.05$, leading us to reject $H_0$ which states that all weight loss diets yield the same mean weight loss. We conclude that at least one diet results in a mean weight loss that differs from the others.
+
+\(b\)
+
+*Low Calorie diet*
+
+*Control group (Placebo)*
+
+C(1,0,0,-1)
+
+```{r}
+library(emmeans)
+lsmDiet <- lsmeans(fit.model, ~ fdiet)
+lsmDiet
+```
+
+
+
+```{r}
+ctrts_diet <- c(1, 0, 0, -1)
+
+
+contrast(lsmDiet, method = list(ctrts = ctrts_diet), infer = c(T, T))
+
+```
+
+Conducting a contrast analysis to compare Low Calorie diet with the Control group:
+
+Since zero is not included in the confidence interval, we reject $H_0$, which states that there is no difference between the low-calorie diet and the control group. We have sufficient evidence to conclude that the weight loss effects between the low-calorie diet and the control group are significantly different.
+
+\(c\)
+
+*Control*
+
+*Average of the three treatments*
+
+C(1/3, 1/3, 1/3, -1)
+
+```{r}
+ctrts_lowfat <- c(1/3, 1/3, 1/3, -1)
+
+
+contrast(lsmDiet, method = list(ctrts = ctrts_lowfat), infer = c(T, T))
+
+```
+
+Since zero is not included in the confidence interval, we reject $H_0$ which states that there is no difference between the average weight loss from the low-calorie, low-fat, and low-carbohydrate diets and the control group. We have sufficient evidence to conclude that the weight loss effects of the diets differ significantly from the control group.

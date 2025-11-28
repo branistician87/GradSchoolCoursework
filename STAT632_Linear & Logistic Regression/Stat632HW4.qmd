@@ -1,0 +1,142 @@
+---
+title: "Stat632 HW 4"
+author: "Brandon Keck"
+format: pdf
+editor: visual
+---
+
+## Exercise 1.
+
+### (a)
+
+Given that $H = (X'X)^{-1}X'$
+
+Show that $HH' = HH = H$
+
+$HH = [X(X'X)^{-1}X'][X(X'X)^{-1}X']$
+
+which then = $[X(X'X)^{-1}][(X'X)(X'X)^{-1}X']$
+
+Because we know that $(X'X)(X'X)^{-1} = I$
+
+Thus:
+
+$HH = X(X'X)^{-1} (X'X)(X'X)^{-1}X'$
+
+$=X(X'X)^{-1}X' = H$
+
+Therefore, $HH' = HH = H$
+
+$\Box$
+
+### (b)
+
+Show that $E(\hat{Y}) = X\beta$
+
+We know that:
+
+$\hat{Y} = X\hat{\beta} = X(X'X)^{-1} X'Y = HY$
+
+and that the regression model can be written as
+
+$Y = X\beta + \epsilon$
+
+Since $E(\epsilon) = 0$
+
+$\hat{Y}=X\hat{\beta}$
+
+Therefore,
+
+$E(\hat{\beta}) = E((X'X)^{-1}X'Y)$
+
+$=[(X'X)^{-1}X'][E(Y)]$
+
+$=(X'X)^{-1}X'(X\beta)$
+
+$=\beta$
+
+$E(\hat{Y}) = E(X\hat{\beta})$
+
+$=X[E(\hat{\beta})]$
+
+$=X\beta$
+
+$\Box$
+
+### (c)
+
+Show that $Var(\hat{Y}) = \sigma^2H$
+
+$Var(\hat{Y} = HVar(Y)H' = H\sigma^2IH' = \sigma^2HH'$
+
+Since $H = H' \ and \ HH = H$
+
+$Var(\hat{Y}) = \sigma^2H$
+
+$\Box$
+
+## Exercise 2.
+
+$(X'X)^{-1} = \frac{1}{nS_{XX}} \begin{pmatrix} \sum x_i^2 & -\sum x_i \\ -\sum x_i & n \end{pmatrix}$
+
+where:
+
+Sxx = $\sum(x_i - \bar{x})^2 = \sum x_i{2} - n\bar{x}2$
+
+$Var(\hat{\beta}) = \frac{\sigma^2}{nSxx}\begin{pmatrix} \sum x_i^2 & -\sum x_i \\ -\sum x_i & n \end{pmatrix}$
+
+$Var(\hat{\beta_0}) = \sigma^2 \frac{\sum x^2_i}{nSxx} = \sigma^2(\frac{1}{n} + \frac{\bar{x}^2}{Sxx})$
+
+$Var(\hat{\beta}_1) = \sigma^2 \cdot \frac{n}{nS_{XX}} = \frac{\sigma^2}{S_{XX}}$
+
+$Cov(\hat{\beta}_0, \hat{\beta}_1) = -\frac{\sigma^2 \bar{x}}{S_{XX}}$
+
+$\Box$
+
+## Exercise 3.
+
+### (a)
+
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+library(dplyr)
+data(Boston)
+```
+
+```{r}
+# design matrix with intercept
+X <- cbind(Intercept = 1, Boston[,c("dis", "rm", "tax", "chas")])
+X <- as.matrix(X)
+Y <- Boston$medv
+
+rownames(X) <- Boston$medv
+X[1:4,]
+
+# manually calculate least squares estimates
+betaHat <- solve(t(X) %*% X) %*% t(X) %*% Y
+betaHat
+
+# Compare with lm()
+lm1 <- lm(medv ~ dis + rm + tax + chas, data = Boston)
+coef(lm1)
+```
+
+### (b)
+
+```{r}
+n <- nrow(Boston)
+p <- 4
+
+# Manually calculate standard errors for least squares estimates
+resid <- as.numeric(Y - X %*% betaHat)
+sigmaHat2 <- sum(resid^2) / (n-p-1)
+covBetaHat <- sigmaHat2 * solve(t(X) %*% X)
+
+covBetaHat
+
+seBetaHat <- sqrt(diag(covBetaHat))
+seBetaHat
+
+# Compare with lm()
+summary(lm1)$coef
+```
